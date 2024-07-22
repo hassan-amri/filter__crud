@@ -44,6 +44,7 @@ export default function Home() {
   const [toggle, setToggle] = useState(true);
 
   useEffect(() => {
+
     const fetchData = async () => {
       try {
         const response = await fetch("/api/clients"); // Replace with your actual API route
@@ -60,9 +61,13 @@ export default function Home() {
         setLoading(false);
       }
       console.log("data", data);
+      
+       
+      
     };
 
     fetchData();
+    
   }, []);
 
   //handleToggle
@@ -200,10 +205,21 @@ export default function Home() {
   //handle filter
 
   const handleFilter = async () => {
+    console.log(filterCount);
+    // document.querySelectorAll(".filteredData").forEach((dt) => {
+    //   dt.style.display = "none";
+    // });
+    // document.querySelectorAll(".actualDataTR").forEach((dt) => {
+    //   dt.style.display = "block";
+    // });
+    // document.querySelector(".searchInput").value = "";
+
     setFilterCount(filterCount + 1);
     console.log(filterCount);
     if (filterCount === 0) {
       document.querySelector(".filter__form").style.display = "block";
+      arr.splice(0, arr.length);
+
       const fetchData = async () => {
         try {
           const response = await fetch("/api/clients"); // Replace with your actual API route
@@ -211,44 +227,20 @@ export default function Home() {
             throw new Error("Failed to fetch data");
           }
           const jsonData = await response.json();
-
+  
           setData(jsonData);
+          console.log("inserted data", data);
         } catch (error) {
           setError(error);
         } finally {
           setLoading(false);
         }
       };
-
+  
       fetchData();
     }
 
     if (filterCount === 1) {
-      // // Filter clients based on search input
-
-      //     const filtered = data.filter(
-      //       (client) =>
-      //         (client.code && client.code.toLowerCase().includes(searchValue.toLowerCase())) ||
-      //         (client.name && client.name.toLowerCase().includes(searchValue.toLowerCase())) ||
-      //         (client.address && client.address.toLowerCase().includes(searchValue.toLowerCase())) ||
-      //         (client.city && client.city.toLowerCase().includes(searchValue.toLowerCase())) ||
-      //         (client.country && client.country.toLowerCase().includes(searchValue.toLowerCase())) ||
-      //         (client.email && client.email.toLowerCase().includes(searchValue.toLowerCase()))
-      //     );
-
-      //     // console.log(filtered);
-
-      //     setData(filtered);
-
-      // data.splice(0,data.length - 1);
-
-      //     console.log(data);
-
-      //     const fetchData = async () => {
-      //      setData(data);
-      //     };
-
-      //     fetchData();
       console.log("this is data", data);
       data.map((client) => {
         if (client.code.includes(searchValue)) {
@@ -268,58 +260,30 @@ export default function Home() {
         }
       });
 
+      document.querySelectorAll(".actualDataTR").forEach((dt) => {
+        dt.style.display = "none";
+      });
+      document.querySelectorAll(".filteredData").forEach((dt) => {
+        dt.style.display = "block";
+      });
+
+      //
+
       console.log("after", arr);
 
       document.querySelector(".filter__form").style.display = "none";
       setFilterCount(2);
       document.querySelector(".searchInput").value = "";
     }
+    if(filterCount===2){
+      window.location.reload();
+
+     
+     
+
+
+    }
   };
-
-  // const handleFilter = () => {
-  //   setFilterCount(filterCount + 1);
-  //   console.log(filterCount);
-  //   if (filterCount === 0) {
-  //     document.querySelector(".filter__form").style.display = "block";
-  //     const fetchData = async () => {
-  //       try {
-  //         const response = await fetch("/api/clients"); // Replace with your actual API route
-  //         if (!response.ok) {
-  //           throw new Error("Failed to fetch data");
-  //         }
-  //         const jsonData = await response.json();
-
-  //         setData(jsonData);
-  //       } catch (error) {
-  //         setError(error);
-  //       } finally {
-  //         setLoading(false);
-  //       }
-  //     };
-
-  //     fetchData();
-  //   }
-  //   if (filterCount === 1) {
-  //     console.log(searchValue);
-  //     setData(
-  //       data.filter(
-  //         (client) =>
-  //           client.code.toLowerCase().includes(searchValue.toLowerCase()) ||
-  //           client.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-  //           client.address.toLowerCase().includes(searchValue.toLowerCase()) ||
-  //           client.city.toLowerCase().includes(searchValue.toLowerCase()) ||
-  //           client.country.toLowerCase().includes(searchValue.toLowerCase()) ||
-  //           client.email.toLowerCase().includes(searchValue.toLowerCase())
-  //       )
-  //     );
-
-  //     // setData(data.filter((client) =>client.city.toLowerCase().includes(city.toLowerCase())));
-
-  //     // document.querySelector(".filter__form").style.display = "none";
-  //     setFilterCount(0);
-  //     // document.querySelector(".searchInput").value = "";
-  //   }
-  // };
 
   // handle delete
   const handleDelete = async (clientId) => {
@@ -544,169 +508,95 @@ export default function Home() {
           </tr>
         </thead>
         <tbody>
-          {filterCount === 2
-            ? arr.map((cl, index) => (
-                <tr key={index}>
-                  <td>
-                    {" "}
-                    <input
-                      type="text"
-                      onChange={(e) => setCode(e.target.value)}
-                      data-client-id={cl.id}
-                      readOnly
-                      defaultValue={cl.id}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="text"
-                      onChange={(e) => setCode(e.target.value)}
-                      data-client-id={cl.id}
-                      readOnly
-                      defaultValue={cl.code}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="text"
-                      onChange={(e) => setCode(e.target.value)}
-                      data-client-id={cl.id}
-                      readOnly
-                      defaultValue={cl.name}
-                    />
-                  </td>
-                  <td>
-                    {" "}
-                    <input
-                      type="text"
-                      onChange={(e) => setCode(e.target.value)}
-                      data-client-id={cl.id}
-                      readOnly
-                      defaultValue={cl.address}
-                    />
-                  </td>
-                  <td>
-                    {" "}
-                    <input
-                      type="text"
-                      onChange={(e) => setCode(e.target.value)}
-                      data-client-id={cl.id}
-                      readOnly
-                      defaultValue={cl.city}
-                    />
-                  </td>
-                  <td>
-                    {" "}
-                    <input
-                      type="text"
-                      onChange={(e) => setCode(e.target.value)}
-                      data-client-id={cl.id}
-                      readOnly
-                      defaultValue={cl.country}
-                    />
-                  </td>
-                  <td>
-                    {" "}
-                    <input
-                      type="text"
-                      onChange={(e) => setCode(e.target.value)}
-                      data-client-id={cl.id}
-                      readOnly
-                      defaultValue={cl.email}
-                    />
-                  </td>
-                </tr>
-              ))
-            : data.map((user, index) => (
-                // for pagination we add .slice(0,5) right after data (between data and map)
-                <tr key={index}>
-                  {/* <th scope="row">{index + 1}</th> */}
-
-                  <td className="idTd">
-                    <input
-                      type="text"
-                      onChange={(e) => setCode(e.target.value)}
-                      data-client-id={user.id}
-                      readOnly
-                      defaultValue={user.id}
-                    />
-                  </td>
-
-                  <td>
-                    <input
-                      type="text"
-                      onChange={(e) => setCode(e.target.value)}
-                      data-client-id={user.id}
-                      readOnly
-                      defaultValue={user.code}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="text"
-                      onChange={(e) => setName(e.target.value)}
-                      data-client-id={user.id}
-                      readOnly
-                      defaultValue={user.name}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="text"
-                      onChange={(e) => setAddress(e.target.value)}
-                      data-client-id={user.id}
-                      readOnly
-                      defaultValue={user.address}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="text"
-                      onChange={(e) => setCity(e.target.value)}
-                      data-client-id={user.id}
-                      readOnly
-                      defaultValue={user.city}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="text"
-                      onChange={(e) => setCountry(e.target.value)}
-                      data-client-id={user.id}
-                      readOnly
-                      defaultValue={user.country}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="text"
-                      onChange={(e) => setEmail(e.target.value)}
-                      data-client-id={user.id}
-                      readOnly
-                      defaultValue={user.mail}
-                    />
-                  </td>
-                  <td className="iconsTd">
-                    <DeleteIcon
-                      className="deleteIcon"
-                      onClick={() => handleDelete(user.id)}
-                    />
-                    <EditIcon
-                      className="updateIcon"
-                      onClick={() => handleUpdate(user.id, index)}
-                    />
-                    {user.active ? (
-                      <CircleIcon className="activeIcon" />
-                    ) : (
-                      <CircleIcon className="non-activeIcon" />
-                    )}
-                  </td>
-                </tr>
-              ))}
-
+          {arr.map((cl, index) => (
+            <tr className="filteredData" key={index}>
+              <td>
+                {" "}
+                <input
+                  type="text"
+                  data-client-id={cl.id}
+                  readOnly
+                  defaultValue={cl.id}
+                />
+              </td>
+              <td>
+                <input
+                  type="text"
+                  onChange={(e) => setCode(e.target.value)}
+                  data-client-id={cl.id}
+                  readOnly
+                  defaultValue={cl.code}
+                />
+              </td>
+              <td>
+                <input
+                  type="text"
+                  onChange={(e) => setName(e.target.value)}
+                  data-client-id={cl.id}
+                  readOnly
+                  defaultValue={cl.name}
+                />
+              </td>
+              <td>
+                {" "}
+                <input
+                  type="text"
+                  onChange={(e) => setAddress(e.target.value)}
+                  data-client-id={cl.id}
+                  readOnly
+                  defaultValue={cl.address}
+                />
+              </td>
+              <td>
+                {" "}
+                <input
+                  type="text"
+                  onChange={(e) => setCity(e.target.value)}
+                  data-client-id={cl.id}
+                  readOnly
+                  defaultValue={cl.city}
+                />
+              </td>
+              <td>
+                {" "}
+                <input
+                  type="text"
+                  onChange={(e) => setCountry(e.target.value)}
+                  data-client-id={cl.id}
+                  readOnly
+                  defaultValue={cl.country}
+                />
+              </td>
+              <td>
+                {" "}
+                <input
+                  type="text"
+                  onChange={(e) => setEmail(e.target.value)}
+                  data-client-id={cl.id}
+                  readOnly
+                  defaultValue={cl.mail}
+                />
+              </td>
+              <td className="iconsTd">
+                <DeleteIcon
+                  className="deleteIcon"
+                  onClick={() => handleDelete(cl.id)}
+                />
+                <EditIcon
+                  className="updateIcon"
+                  onClick={() => handleUpdate(cl.id, index)}
+                />
+                {cl.active ? (
+                  <CircleIcon className="activeIcon" />
+                ) : (
+                  <CircleIcon className="non-activeIcon" />
+                )}
+              </td>
+            </tr>
+          ))}
           {data.map((user, index) => (
             // for pagination we add .slice(0,5) right after data (between data and map)
-            <tr key={index}>
+            <tr className="actualDataTR" key={index}>
               {/* <th scope="row">{index + 1}</th> */}
 
               <td className="idTd">
