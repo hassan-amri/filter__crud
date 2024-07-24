@@ -494,6 +494,7 @@ import CircleIcon from "@mui/icons-material/Circle";
 import ToggleOffIcon from "@mui/icons-material/ToggleOff";
 import ToggleOnIcon from "@mui/icons-material/ToggleOn";
 import Link from "next/link";
+import { DataArray } from "@mui/icons-material";
 
 export default function Home() {
   const [data, setData] = useState([]);
@@ -524,6 +525,9 @@ export default function Home() {
   // update client
   const [clickCount, setClickCount] = useState(0);
 
+  // pagination
+  const [pageNumber, setPageNumber] = useState(1);
+
   // switch toggle icons
   const [active, setActive] = useState(1);
   // switch toggle in add form
@@ -531,6 +535,8 @@ export default function Home() {
   const [filterCategory, setFilterCategory] = useState("all");
 
   const [isControlled, setIsControlled] = useState(true);
+
+  const [dataCount,setDataCount] = useState();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -552,6 +558,26 @@ export default function Home() {
     };
 
     fetchData();
+    const fetchDataCount = async () => {
+      try {
+        const response = await fetch("/api/getClientsCount"); // Replace with your actual API route
+        if (!response.ok) {
+          throw new Error("Failed to fetch data");
+        }
+        const jsonData = await response.json();
+        console.log('data count : ',jsonData);
+
+        setDataCount(jsonData);
+        console.log('data count hhhh : ',dataCount);
+      } catch (error) {
+        setError(error);
+      } finally {
+        setLoading(false);
+      }
+      
+    };
+
+    fetchDataCount();
   }, []);
 
   //handleToggle
@@ -650,6 +676,7 @@ export default function Home() {
       } finally {
         setLoading(false);
       }
+      setDataCount(dataCount+1);
       setInsertCount(0);
       console.log("hassan");
       document.querySelector(".insert__form").style.display = "none";
@@ -808,9 +835,8 @@ export default function Home() {
     console.log(clickCount);
 
     document.querySelectorAll("input[data-client-id]").forEach(function (item) {
-      setIsControlled(false)
+      setIsControlled(false);
       item.setAttribute("readOnly", true);
-
 
       item.style.backgroundColor = "transparent";
       item.style.border = "none";
@@ -885,11 +911,82 @@ export default function Home() {
     // console.log(customerId);
   };
 
+  //handle pagination
+  const handlePagination = (clickedNumber) => {
+    console.log(typeof clickedNumber);
+    window.scrollTo(0, 0);
+
+    if (Number(clickedNumber) === 1) {
+      const fetchData = async () => {
+        try {
+          const response = await fetch("/api/clients"); // Replace with your actual API route
+          if (!response.ok) {
+            throw new Error("Failed to fetch data");
+          }
+          const jsonData = await response.json();
+
+          
+          return setData(jsonData.slice(0, 10));
+        } catch (error) {
+          setError(error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchData();
+      
+    }
+    if (Number(clickedNumber) === 2) {
+      const fetchData = async () => {
+        try {
+          const response = await fetch("/api/clients"); // Replace with your actual API route
+          if (!response.ok) {
+            throw new Error("Failed to fetch data");
+          }
+          const jsonData = await response.json();
+
+          
+          return setData(jsonData.slice(10, 20));
+        } catch (error) {
+          setError(error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchData();
+      
+     
+    }
+    if (Number(clickedNumber) === 3) {
+      const fetchData = async () => {
+        try {
+          const response = await fetch("/api/clients"); // Replace with your actual API route
+          if (!response.ok) {
+            throw new Error("Failed to fetch data");
+          }
+          const jsonData = await response.json();
+
+          
+          return setData(jsonData.slice(20, 30));
+        } catch (error) {
+          setError(error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchData();
+      
+    }
+  };
+
   const [success, setSuccess] = useState(false);
 
   return (
     <div>
-      <h1>List of Clients : [{data.length}]</h1>
+      <h1>List of Clients : [{dataCount}]</h1>
 
       <div className="alert__area">please enter all the information</div>
 
@@ -991,98 +1088,123 @@ export default function Home() {
           </tr>
         </thead>
         <tbody>
-          {data.map((user, index) => (
+          {data.slice(0,10).map((user, index) => (
             <tr key={index}>
               <td className="idTd">
-                <input type="text"
-                 readOnly
-                 data-client-id={user.id}
-                  value={user.id} />
-              </td>
-              <td>
-                {isControlled ? <input
+                <input
                   type="text"
-                  onChange={(e) => setCode(e.target.value)}
                   readOnly
                   data-client-id={user.id}
-                  value={user.code}
-                />:<input
-                type="text"
-                onChange={(e) => setCode(e.target.value)}
-                data-client-id={user.id}
-                defaultValue={user.code}
-              />}
+                  value={user.id}
+                />
               </td>
               <td>
-              {isControlled ? <input
-                  type="text"
-                  onChange={(e) => setName(e.target.value)}
-                  readOnly
-                  data-client-id={user.id}
-                  value={user.name}
-                />:<input
-                type="text"
-                onChange={(e) => setName(e.target.value)}
-                data-client-id={user.id}
-                defaultValue={user.name}
-              />}
-
+                {isControlled ? (
+                  <input
+                    type="text"
+                    onChange={(e) => setCode(e.target.value)}
+                    readOnly
+                    data-client-id={user.id}
+                    value={user.code}
+                  />
+                ) : (
+                  <input
+                    type="text"
+                    onChange={(e) => setCode(e.target.value)}
+                    data-client-id={user.id}
+                    defaultValue={user.code}
+                  />
+                )}
               </td>
               <td>
-              {isControlled ? <input
-                  type="text"
-                  onChange={(e) => setAddress(e.target.value)}
-                  readOnly
-                  data-client-id={user.id}
-                  value={user.address}
-                />:<input
-                type="text"
-                onChange={(e) => setAddress(e.target.value)}
-                data-client-id={user.id}
-                defaultValue={user.address}
-              />}
+                {isControlled ? (
+                  <input
+                    type="text"
+                    onChange={(e) => setName(e.target.value)}
+                    readOnly
+                    data-client-id={user.id}
+                    value={user.name}
+                  />
+                ) : (
+                  <input
+                    type="text"
+                    onChange={(e) => setName(e.target.value)}
+                    data-client-id={user.id}
+                    defaultValue={user.name}
+                  />
+                )}
               </td>
               <td>
-              {isControlled ? <input
-                  type="text"
-                  onChange={(e) => setCity(e.target.value)}
-                  readOnly
-                  data-client-id={user.id}
-                  value={user.city}
-                />:<input
-                type="text"
-                onChange={(e) => setCity(e.target.value)}
-                data-client-id={user.id}
-                defaultValue={user.city}
-              />}
+                {isControlled ? (
+                  <input
+                    type="text"
+                    onChange={(e) => setAddress(e.target.value)}
+                    readOnly
+                    data-client-id={user.id}
+                    value={user.address}
+                  />
+                ) : (
+                  <input
+                    type="text"
+                    onChange={(e) => setAddress(e.target.value)}
+                    data-client-id={user.id}
+                    defaultValue={user.address}
+                  />
+                )}
               </td>
               <td>
-              {isControlled ? <input
-                  type="text"
-                  onChange={(e) => setCountry(e.target.value)}
-                  readOnly
-                  data-client-id={user.id}
-                  value={user.country}
-                />:<input
-                type="text"
-                onChange={(e) => setCountry(e.target.value)}
-                data-client-id={user.id}
-                defaultValue={user.country}
-              />}
+                {isControlled ? (
+                  <input
+                    type="text"
+                    onChange={(e) => setCity(e.target.value)}
+                    readOnly
+                    data-client-id={user.id}
+                    value={user.city}
+                  />
+                ) : (
+                  <input
+                    type="text"
+                    onChange={(e) => setCity(e.target.value)}
+                    data-client-id={user.id}
+                    defaultValue={user.city}
+                  />
+                )}
               </td>
               <td>
-              {isControlled ? <input
-                  type="text"
-                  onChange={(e) => setEmail(e.target.value)}
-                  readOnly
-                  data-client-id={user.id}
-                  value={user.mail}
-                />:<input
-                type="text"
-                onChange={(e) => setEmail(e.target.value)}
-                data-client-id={user.id}
-                defaultValue={user.mail}
-              />}
+                {isControlled ? (
+                  <input
+                    type="text"
+                    onChange={(e) => setCountry(e.target.value)}
+                    readOnly
+                    data-client-id={user.id}
+                    value={user.country}
+                  />
+                ) : (
+                  <input
+                    type="text"
+                    onChange={(e) => setCountry(e.target.value)}
+                    data-client-id={user.id}
+                    defaultValue={user.country}
+                  />
+                )}
+              </td>
+              <td>
+                {isControlled ? (
+                  <input
+                    type="text"
+                    onChange={(e) => setEmail(e.target.value)}
+                    readOnly
+                    data-client-id={user.id}
+                    value={user.mail}
+                  />
+                ) : (
+                  <input
+                    type="text"
+                    onChange={(e) => setEmail(e.target.value)}
+                    data-client-id={user.id}
+                    defaultValue={user.mail}
+                  />
+                )}
               </td>
               <td className="iconsTd">
                 <DeleteIcon
@@ -1105,30 +1227,20 @@ export default function Home() {
       </table>
       <nav aria-label="Page navigation example">
         <ul className="pagination">
-          <li className="page-item">
-            <a className="page-link" href="#">
-              Previous
-            </a>
+          <li className="page-item" onClick={(e) => handlePagination(e.target.textContent)}>
+            Previous
           </li>
-          <li className="page-item">
-            <a className="page-link" href="#">
-              1
-            </a>
+          <li className="page-item" onClick={(e) => handlePagination(e.target.textContent)}>
+            1
           </li>
-          <li className="page-item">
-            <a className="page-link" href="#">
-              2
-            </a>
+          <li className="page-item" onClick={(e) => handlePagination(e.target.textContent)}>
+            2
           </li>
-          <li className="page-item">
-            <a className="page-link" href="#">
-              3
-            </a>
+          <li className="page-item" onClick={(e) => handlePagination(e.target.textContent)}>
+            3
           </li>
-          <li className="page-item">
-            <a className="page-link" href="#">
-              Next
-            </a>
+          <li className="page-item" onClick={(e) => handlePagination(e.target.textContent)}>
+            Next
           </li>
         </ul>
       </nav>
