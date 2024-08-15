@@ -1,44 +1,50 @@
-'use client'
+// page.jsx
 
-import { useRouter } from "next/navigation";
-import React from "react";
+import PaginationControls from '../PaginationControls';
+import Image from 'next/image';
 
-function page() {
-    const router = useRouter()
-  return <div>
-    <h1>about Page</h1>
-    <nav aria-label="Page navigation example">
-        <ul className="pagination">
-          <li className="page-item" onClick={() => router.back()}>
-            Previous
-          </li>
-          <li
-            className="page-item"
-            
-          >
-            1
-          </li>
-          <li
-            className="page-item"
-            
-          >
-            2
-          </li>
-          <li
-            className="page-item"
-            
-          >
-            3
-          </li>
-          <li
-            className="page-item"
-            
-          >
-            Next
-          </li>
-        </ul>
-      </nav>
-  </div>;
+
+const data = [
+  'entry 1',
+  'entry 2',
+  'entry 3',
+  'entry 4',
+  'entry 5',
+  'entry 6',
+  'entry 7',
+  'entry 8',
+  'entry 9',
+  'entry 10',
+  'entry 11',
+  'entry 12',
+  'entry 13',
+  'entry 14',
+  'entry 15',
+
+]
+
+export default function Home({
+  searchParams,
+}) {
+  const page = searchParams['page'] ?? '1'
+  const per_page = searchParams['per_page'] ?? '5'
+
+  // mocked, skipped and limited in the real app
+  const start = (Number(page) - 1) * Number(per_page) // 0, 5, 10 ...
+  const end = start + Number(per_page) // 5, 10, 15 ...
+
+  const entries = data.slice(start, end)
+
+  return (
+    <div className='flex flex-col gap-2 items-center'>
+      {entries.map((entry) => (
+        <p key={entry}>{entry}</p>
+      ))}
+
+      <PaginationControls
+        hasNextPage={end < data.length}
+        hasPrevPage={start > 0}
+      />
+    </div>
+  )
 }
-
-export default page;

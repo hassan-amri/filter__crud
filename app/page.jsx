@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./page.css";
 import { PrismaClient } from "@prisma/client";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -10,12 +10,17 @@ import ToggleOnIcon from "@mui/icons-material/ToggleOn";
 import Link from "next/link";
 import { DataArray } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
+import PaginationControls from "./PaginationControls";
 
-export default function Home() {
+export default function Home({searchParams}) {
   const router = useRouter();
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const [newTr, setNewTr] = useState(true);
+
+  const targetRef = useRef(null);
 
   // filter fields
   const [code, setCode] = useState("");
@@ -32,8 +37,17 @@ export default function Home() {
   const [filter, isFilter] = useState(true);
   const [filterCount, setFilterCount] = useState(0);
   const [searchValue, setSearchValue] = useState("");
+
+  const [filterCode, setFilterCode] = useState("");
+  const [filterName, setFilterName] = useState("");
+  const [filterAddress, setFilterAddress] = useState("");
+  const [filterCity, setFilterCity] = useState("");
+  const [filterCountry, setFilterCountry] = useState("");
+  const [filterEmail, setFilterEmail] = useState("");
   // insert form
   const [insertCount, setInsertCount] = useState(0);
+
+  const [addedTr, setAddedTr] = useState(false);
 
   //deleting client
   const [message, setMessage] = useState("");
@@ -54,8 +68,83 @@ export default function Home() {
 
   const [dataCount, setDataCount] = useState();
 
+
+
+
+
+const datas = [
+  'entry 1',
+  'entry 2',
+  'entry 3',
+  'entry 4',
+  'entry 5',
+  'entry 6',
+  'entry 7',
+  'entry 8',
+  'entry 9',
+  'entry 10',
+  'entry 11',
+  'entry 12',
+  'entry 13',
+  'entry 14',
+  'entry 15',
+
+]
+
+
+  const page = searchParams['page'] ?? '1'
+  const per_page = searchParams['per_page'] ?? '5'
+
+  // mocked, skipped and limited in the real app
+  const start = (Number(page) - 1) * Number(per_page) // 0, 5, 10 ...
+  const end = start + Number(per_page) // 5, 10, 15 ...
+
+  const entries = datas.slice(start, end)
+
+ 
+
+  const fetchDataCount = async () => {
+    try {
+      const response = await fetch("/api/getClientsCount"); // Replace with your actual API route
+      if (!response.ok) {
+        throw new Error("Failed to fetch data");
+      }
+      const jsonData = await response.json();
+      console.log("data count : ", jsonData);
+
+      setDataCount(jsonData);
+      console.log("data count hhhh : ", dataCount);
+    } catch (error) {
+      setError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // scrolling action useEffect
   useEffect(() => {
-    localStorage.setItem("lastPage", '1');
+    const handleScroll = () => {
+      // Check if the scroll position is greater than 500 pixels
+      if (window.scrollY > 160) {
+        // alert("hassan");
+        document.querySelector("#table thead tr").style.position = "sticky";
+        document.querySelector("#table thead tr").style.top = "0";
+        document.querySelector("#table thead tr").style.width =
+          "100vw !important";
+      }
+    };
+
+    // Add scroll event listener
+    window.addEventListener("scroll", handleScroll);
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []); // Empty dependency array means this effect runs once on mount
+
+  useEffect(() => {
+    localStorage.setItem("lastPage", "1");
     const fetchData = async () => {
       try {
         const response = await fetch("/api/clients"); // Replace with your actual API route
@@ -75,26 +164,54 @@ export default function Home() {
     };
 
     fetchData();
-    const fetchDataCount = async () => {
-      try {
-        const response = await fetch("/api/getClientsCount"); // Replace with your actual API route
-        if (!response.ok) {
-          throw new Error("Failed to fetch data");
-        }
-        const jsonData = await response.json();
-        console.log("data count : ", jsonData);
-
-        setDataCount(jsonData);
-        console.log("data count hhhh : ", dataCount);
-      } catch (error) {
-        setError(error);
-      } finally {
-        setLoading(false);
-      }
-    };
 
     fetchDataCount();
   }, []);
+
+  // useEffect for filter inputs
+  const fetchData = async () => {
+    try {
+      const response = await fetch("/api/clients"); // Replace with your actual API route
+      if (!response.ok) {
+        throw new Error("Failed to fetch data");
+      }
+      const jsonData = await response.json();
+      console.log(jsonData);
+
+      setData(jsonData);
+    } catch (error) {
+      setError(error);
+    } finally {
+      setLoading(false);
+    }
+    console.log("data", data);
+  };
+
+  useEffect(() => {
+    const filterData = data.filter((client) => {
+      if (
+        client.code.toLowerCase().includes(filterCode.toLowerCase()) &&
+        client.name.toLowerCase().includes(filterName.toLowerCase()) &&
+        client.address.toLowerCase().includes(filterAddress.toLowerCase()) &&
+        client.city.toLowerCase().includes(filterCity.toLowerCase()) &&
+        client.country.toLowerCase().includes(filterCountry.toLowerCase()) &&
+        client.mail.toLowerCase().includes(filterEmail.toLowerCase())
+      ) {
+        return client;
+      }
+    });
+
+    setData(filterData);
+
+    setDataCount(filterData.length);
+  }, [
+    filterCode,
+    filterName,
+    filterAddress,
+    filterCity,
+    filterCountry,
+    filterEmail,
+  ]);
 
   //handleToggle
   const handleToggle = () => {
@@ -113,55 +230,33 @@ export default function Home() {
     setSearchValue(e.target.value);
   };
 
-  // handle filter
-  const handleFilterChange = (e) => {
-    const { name, value } = e.target;
-    if (name === "code") {
-      setCode(value);
-    }
-    if (name === "name") {
-      setName(value);
-    }
-    if (name === "address") {
-      setAddress(value);
-    }
-    if (name === "city") {
-      setCity(value);
-    }
-    if (name === "country") {
-      setCountry(value);
-    }
-    if (name === "email") {
-      setEmail(value);
-    }
-    // if (name === "active") {
-    //   setActive(parseInt(value));
-    // }
-  };
-
   //handle insert
   const handleInsert = async (e) => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch("/api/clients"); // Replace with your actual API route
-        if (!response.ok) {
-          throw new Error("Failed to fetch data");
-        }
-        const jsonData = await response.json();
+    // const fetchData = async () => {
+    //   try {
+    //     const response = await fetch("/api/clients"); // Replace with your actual API route
+    //     if (!response.ok) {
+    //       throw new Error("Failed to fetch data");
+    //     }
+    //     const jsonData = await response.json();
 
-        setData(jsonData);
-        console.log("inserted data", data);
-      } catch (error) {
-        setError(error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    //     setData(jsonData);
+    //     console.log("inserted data", data);
+    //   } catch (error) {
+    //     setError(error);
+    //   } finally {
+    //     setLoading(false);
+    //   }
+    // };
 
     fetchData();
     setInsertCount(insertCount + 1);
     console.log(insertCount);
     if (insertCount === 0) {
+      
+        targetRef.current?.scrollIntoView({ behavior: 'smooth' });
+      
+      setAddedTr(true);
       document.querySelector(".insert__form").style.display = "block";
     }
     if (insertCount === 1) {
@@ -233,9 +328,21 @@ export default function Home() {
 
   const handleFilter = async () => {
     setFilterCount(filterCount + 1);
+
     console.log(filterCount);
     if (filterCount === 0) {
-      document.querySelector(".filter__form").style.display = "block";
+      setNewTr(true);
+      setFilterCode("");
+      setFilterName("");
+      setFilterAddress("");
+      setFilterCity("");
+      setFilterCountry("");
+      setFilterEmail("");
+
+      fetchDataCount();
+
+      // document.querySelector(".new__search__form").style.display = "block";
+
       const fetchData = async () => {
         try {
           const response = await fetch("/api/clients"); // Replace with your actual API route
@@ -256,43 +363,59 @@ export default function Home() {
     }
 
     if (filterCount === 1) {
-      const filtered = data.filter((client) => {
-        if (filterCategory === "all") {
-          return (
-            (client.code &&
-              client.code.toLowerCase().includes(searchValue.toLowerCase())) ||
-            (client.name &&
-              client.name.toLowerCase().includes(searchValue.toLowerCase())) ||
-            (client.address &&
-              client.address
-                .toLowerCase()
-                .includes(searchValue.toLowerCase())) ||
-            (client.city &&
-              client.city.toLowerCase().includes(searchValue.toLowerCase())) ||
-            (client.country &&
-              client.country
-                .toLowerCase()
-                .includes(searchValue.toLowerCase())) ||
-            (client.email &&
-              client.email.toLowerCase().includes(searchValue.toLowerCase()))
-          );
-        } else {
-          return (
-            client[filterCategory] &&
-            client[filterCategory]
-              .toLowerCase()
-              .includes(searchValue.toLowerCase())
-          );
+      // const filtered = data.filter((client) => {
+      //   if (filterCategory === "all") {
+      //     return (
+      //       (client.code &&
+      //         client.code.toLowerCase().includes(searchValue.toLowerCase())) ||
+      //       (client.name &&
+      //         client.name.toLowerCase().includes(searchValue.toLowerCase())) ||
+      //       (client.address &&
+      //         client.address
+      //           .toLowerCase()
+      //           .includes(searchValue.toLowerCase())) ||
+      //       (client.city &&
+      //         client.city.toLowerCase().includes(searchValue.toLowerCase())) ||
+      //       (client.country &&
+      //         client.country
+      //           .toLowerCase()
+      //           .includes(searchValue.toLowerCase())) ||
+      //       (client.email &&
+      //         client.email.toLowerCase().includes(searchValue.toLowerCase()))
+      //     );
+      //   } else {
+      //     return (
+      //       client[filterCategory] &&
+      //       client[filterCategory]
+      //         .toLowerCase()
+      //         .includes(searchValue.toLowerCase())
+      //     );
+      //   }
+      // });
+
+      const filterData = data.filter((client) => {
+        if (
+          client.code.toLowerCase().includes(filterCode.toLowerCase()) &&
+          client.name.toLowerCase().includes(filterName.toLowerCase()) &&
+          client.address.toLowerCase().includes(filterAddress.toLowerCase()) &&
+          client.city.toLowerCase().includes(filterCity.toLowerCase()) &&
+          client.country.toLowerCase().includes(filterCountry.toLowerCase()) &&
+          client.mail.toLowerCase().includes(filterEmail.toLowerCase())
+        ) {
+          return client;
         }
       });
 
-      console.log(filtered);
-      setData(filtered);
+      setData(filterData);
+
+      setDataCount(filterData.length);
+
+      // console.log(filtered);
+      // setData(filtered);
       console.log(data);
-      document.querySelector(".filter__form").style.display = "none";
+      document.querySelector(".new__search__form").style.display = "none";
       setFilterCount(0);
-      document.querySelector(".searchInput").value = "";
-      setFilterCategory("all");
+      setNewTr(false);
     }
   };
 
@@ -397,7 +520,15 @@ export default function Home() {
       } finally {
         // setLoading(false);
       }
-      // window.location.reload();
+      window.location.reload();
+      // setData([]);
+      // setFilterCode("");
+      // setFilterName("");
+      // setFilterAddress("");
+      // setFilterCity("");
+      // setFilterCountry("");
+      // setFilterEmail("");
+
       setClickCount(0);
       const fetchData = async () => {
         try {
@@ -432,12 +563,12 @@ export default function Home() {
   //handle pagination
   const handlePagination = (clickedNumber) => {
     window.scrollTo(0, 0);
-    const getStorage = localStorage.getItem('lastPage');
+    const getStorage = localStorage.getItem("lastPage");
     console.log(clickedNumber);
 
-    if(clickedNumber === 'Previous'){
-      if(getStorage ==='2'){
-        localStorage.setItem('lastPage', '1');
+    if (clickedNumber === "Previous") {
+      if (getStorage === "2") {
+        localStorage.setItem("lastPage", "1");
         const fetchData = async () => {
           try {
             const response = await fetch("/api/clients"); // Replace with your actual API route
@@ -455,10 +586,9 @@ export default function Home() {
         };
 
         fetchData();
-
       }
-      if(getStorage ==='3'){
-        localStorage.setItem('lastPage', '2');
+      if (getStorage === "3") {
+        localStorage.setItem("lastPage", "2");
         const fetchData = async () => {
           try {
             const response = await fetch("/api/clients"); // Replace with your actual API route
@@ -476,14 +606,12 @@ export default function Home() {
         };
 
         fetchData();
-
       }
-
     }
 
-    if(clickedNumber === 'Next'){
-      if(getStorage ==='1'){
-        localStorage.setItem('lastPage', '2');
+    if (clickedNumber === "Next") {
+      if (getStorage === "1") {
+        localStorage.setItem("lastPage", "2");
         const fetchData = async () => {
           try {
             const response = await fetch("/api/clients"); // Replace with your actual API route
@@ -501,10 +629,9 @@ export default function Home() {
         };
 
         fetchData();
-
       }
-      if(getStorage ==='2'){
-        localStorage.setItem('lastPage', '3');
+      if (getStorage === "2") {
+        localStorage.setItem("lastPage", "3");
         const fetchData = async () => {
           try {
             const response = await fetch("/api/clients"); // Replace with your actual API route
@@ -522,12 +649,8 @@ export default function Home() {
         };
 
         fetchData();
-
       }
-
     }
-
-    
 
     if (Number(clickedNumber) === 1) {
       const fetchData = async () => {
@@ -547,7 +670,7 @@ export default function Home() {
       };
 
       fetchData();
-      localStorage.setItem('lastPage', clickedNumber);
+      localStorage.setItem("lastPage", clickedNumber);
     }
     if (Number(clickedNumber) === 2) {
       const fetchData = async () => {
@@ -567,7 +690,7 @@ export default function Home() {
       };
 
       fetchData();
-      localStorage.setItem('lastPage', clickedNumber);
+      localStorage.setItem("lastPage", clickedNumber);
     }
     if (Number(clickedNumber) === 3) {
       const fetchData = async () => {
@@ -587,13 +710,9 @@ export default function Home() {
       };
 
       fetchData();
-      localStorage.setItem('lastPage', clickedNumber);
+      localStorage.setItem("lastPage", clickedNumber);
     }
   };
-
-  
-
-  
 
   const [success, setSuccess] = useState(false);
 
@@ -602,106 +721,114 @@ export default function Home() {
       <h1 className="listTitle">List of Clients : [{dataCount}]</h1>
 
       <span className="buttons">
+        
         <button
           type="button"
-          className="btn btn-primary"
+          className="btn btn-primary filterBtn"
           onClick={handleFilter}
         >
           Filter
         </button>
+        
         <br />
+        <a href="#new__add__form">
         <button
           type="button"
-          className="btn btn-success"
+          className="btn btn-success newBtn"
           onClick={handleInsert}
         >
           New
-        </button>
+        </button></a>
       </span>
-      <div className="filter__form">
-        <select
-          value={filterCategory}
-          onChange={(e) => setFilterCategory(e.target.value)}
-        >
-          <option value="all">All</option>
-          <option value="code">Code</option>
-          <option value="name">Name</option>
-          <option value="address">Address</option>
-          <option value="city">City</option>
-          <option value="country">Country</option>
-          <option value="email">Email</option>
-        </select>
-        <input
-          type="text"
-          placeholder="Search..."
-          className="searchInput"
-          defaultValue={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
-        />
-      </div>
+
       <span className="insert__form">
-        <input
-          type="text"
-          placeholder="Code..."
-          className="inputField"
-          defaultValue={code}
-          onChange={(e) => setCode(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Name..."
-          className="inputField"
-          defaultValue={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Address..."
-          className="inputField"
-          defaultValue={address}
-          onChange={(e) => setAddress(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="City..."
-          className="inputField"
-          defaultValue={city}
-          onChange={(e) => setCity(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Country..."
-          className="inputField"
-          defaultValue={country}
-          onChange={(e) => setCountry(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Email..."
-          className="inputField"
-          defaultValue={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        {toggle ? (
-          <div>
-            <span className="activeWord">Active :</span>{" "}
-            <ToggleOnIcon className="toggleOn" onClick={() => handleToggle()} />
-          </div>
-        ) : (
-          <div>
-            <span className="activeWord">Active :</span>{" "}
-            <ToggleOffIcon
-              className="toggleOff"
-              onClick={() => handleToggle()}
+        <div className="insert__fields">
+          <div className="insert__field">
+            <span>Code :</span>
+            <input
+              type="text"
+              placeholder="Code..."
+              className="inputField"
+              defaultValue={code}
+              onChange={(e) => setCode(e.target.value)}
             />
           </div>
-        )}
+          <div className="insert__field">
+            <span>Name : </span>
+            <input
+              type="text"
+              placeholder="Name..."
+              className="inputField"
+              defaultValue={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </div>
+
+          <div className="insert__field">
+            <span>Address : </span>
+            <input
+              type="text"
+              placeholder="Address..."
+              className="inputField"
+              defaultValue={address}
+              onChange={(e) => setAddress(e.target.value)}
+            />
+          </div>
+          <div className="insert__field">
+            <span>City : </span>
+            <input
+              type="text"
+              placeholder="City..."
+              className="inputField"
+              defaultValue={city}
+              onChange={(e) => setCity(e.target.value)}
+            />
+          </div>
+          <div className="insert__field">
+            <span>Country : </span>
+            <input
+              type="text"
+              placeholder="Country..."
+              className="inputField"
+              defaultValue={country}
+              onChange={(e) => setCountry(e.target.value)}
+            />
+          </div>
+          <div className="insert__field">
+            <span>Email : </span>
+            <input
+              type="text"
+              placeholder="Email..."
+              className="inputField"
+              defaultValue={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div className="insert__field">
+            {toggle ? (
+              <div>
+                <span className="activeWord">Active :</span>{" "}
+                <ToggleOnIcon
+                  className="toggleOn"
+                  onClick={() => handleToggle()}
+                />
+              </div>
+            ) : (
+              <div>
+                <span className="activeWord">Active :</span>{" "}
+                <ToggleOffIcon
+                  className="toggleOff"
+                  onClick={() => handleToggle()}
+                />
+              </div>
+            )}
+          </div>
+        </div>
       </span>
 
       <table id="table" className="table table-striped">
         <thead>
           <tr>
-            <th scope="col">Id</th>
             <th scope="col">Code</th>
             <th scope="col">Name</th>
             <th scope="col">Address</th>
@@ -711,18 +838,65 @@ export default function Home() {
             <th scope="col">Action</th>
           </tr>
         </thead>
+
         <tbody>
-          {data.slice(0, 10).map((user, index) => (
-            <tr key={index}>
-              <td className="idTd">
+          {newTr && (
+            <tr className="new__search__form" id="new__search__form">
+              <td>
                 <input
                   type="text"
-                  readOnly
-                  data-client-id={user.id}
-                  value={user.id}
+                  placeholder="search by code"
+                  value={filterCode}
+                  onChange={(e) => setFilterCode(e.target.value)}
                 />
               </td>
               <td>
+                <input
+                  type="text"
+                  placeholder="search by name"
+                  value={filterName}
+                  onChange={(e) => setFilterName(e.target.value)}
+                />
+              </td>
+              <td>
+                <input
+                  type="text"
+                  placeholder="search by address"
+                  value={filterAddress}
+                  onChange={(e) => setFilterAddress(e.target.value)}
+                />
+              </td>
+              <td>
+                <input
+                  type="text"
+                  placeholder="search by city"
+                  value={filterCity}
+                  onChange={(e) => setFilterCity(e.target.value)}
+                />
+              </td>
+              <td>
+                <input
+                  type="text"
+                  placeholder="search by country"
+                  value={filterCountry}
+                  onChange={(e) => setFilterCountry(e.target.value)}
+                />
+              </td>
+              <td>
+                <input
+                  type="text"
+                  placeholder="search by mail"
+                  value={filterEmail}
+                  onChange={(e) => setFilterEmail(e.target.value)}
+                />
+              </td>
+            </tr>
+          )}
+
+          {/* slice(0,10) */}
+          {data.slice(start, end).map((user, index) => (
+            <tr key={index}>
+              <td className="resizedField">
                 {isControlled ? (
                   <input
                     type="text"
@@ -776,7 +950,7 @@ export default function Home() {
                   />
                 )}
               </td>
-              <td>
+              <td className="resizedField">
                 {isControlled ? (
                   <input
                     type="text"
@@ -794,7 +968,7 @@ export default function Home() {
                   />
                 )}
               </td>
-              <td>
+              <td className="resizedField">
                 {isControlled ? (
                   <input
                     type="text"
@@ -847,9 +1021,84 @@ export default function Home() {
               </td>
             </tr>
           ))}
+          {addedTr && (
+          <tr className="new__search__form" id="new__add__form" ref={targetRef}>
+            <td>
+              <input
+                type="text"
+                placeholder="Add code"
+                value={filterCode}
+                onChange={(e) => setFilterCode(e.target.value)}
+              />
+            </td>
+            <td>
+              <input
+                type="text"
+                placeholder="Add name"
+                value={filterName}
+                onChange={(e) => setFilterName(e.target.value)}
+              />
+            </td>
+            <td>
+              <input
+                type="text"
+                placeholder="Add address"
+                value={filterAddress}
+                onChange={(e) => setFilterAddress(e.target.value)}
+              />
+            </td>
+            <td>
+              <input
+                type="text"
+                placeholder="Add city"
+                value={filterCity}
+                onChange={(e) => setFilterCity(e.target.value)}
+              />
+            </td>
+            <td>
+              <input
+                type="text"
+                placeholder="Add country"
+                value={filterCountry}
+                onChange={(e) => setFilterCountry(e.target.value)}
+              />
+            </td>
+            <td>
+              <input
+                type="text"
+                placeholder="Add mail"
+                value={filterEmail}
+                onChange={(e) => setFilterEmail(e.target.value)}
+              />
+            </td>
+            <td> {toggle ? (
+              <div>
+                {/* <span className="activeWord">Active :</span>{" "} */}
+                <ToggleOnIcon
+                  className="toggleOn"
+                  onClick={() => handleToggle()}
+                />
+              </div>
+            ) : (
+              <div>
+                {/* <span className="activeWord">Active :</span>{" "} */}
+                <ToggleOffIcon
+                  className="toggleOff"
+                  onClick={() => handleToggle()}
+                />
+              </div>
+            )}</td>
+          </tr>
+        )} 
         </tbody>
       </table>
-      <nav aria-label="Page navigation example">
+     
+      <PaginationControls
+        dataLength = {data.length}
+        hasNextPage={end < data.length}
+        hasPrevPage={start > 0}
+      />
+      {/* <nav aria-label="Page navigation example">
         <ul className="pagination">
           <li
             className="page-item"
@@ -883,8 +1132,7 @@ export default function Home() {
             Next
           </li>
         </ul>
-      </nav>
-      <Link href="/about">go to about</Link>
+      </nav> */}
     </div>
   );
 }

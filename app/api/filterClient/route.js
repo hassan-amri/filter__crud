@@ -1,29 +1,26 @@
-import { NextResponse } from "next/server";
-import prisma from "../../libs/prisma";
+import { PrismaClient } from '@prisma/client';
 
+const prisma = new PrismaClient();
 
+export default async function handler(req, res) {
+  if (req.method === 'GET') {
+    const { name } = req.query;
 
-export async function GET() {
-
-    
-  try {
-    const clients = await prisma.client.findMany({
-      where: {
-        city: {
-          contains: "ll",
+    try {
+      const filteredData = await prisma.client.findMany({
+        where: {
+          name: {
+            contains: name,
+            mode: 'insensitive',
+          },
         },
-      },
-    });
+      });
 
-    // Return the fetched rows as a JSON response
-    return NextResponse.json(clients);
-  } catch (error) {
-    // Return an error response in case of an exception
-    return NextResponse.json(
-      {
-        error: error.message,
-      },
-      { status: 500 }
-    );
+      res.status(200).json(filteredData);
+    } catch (error) {
+      res.status(500).json({ message: 'Error fetching data', error });
+    }
+  } else {
+    res.status(405).json({ message: 'Method not allowed' });
   }
 }

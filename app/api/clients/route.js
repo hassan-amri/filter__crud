@@ -4,7 +4,11 @@ import prisma from "../../libs/prisma";
 export async function GET() {
   try {
     // Fetch all rows from the 'Client' table using Prisma
-    const clients = await prisma.client.findMany();
+    // const clients = await prisma.client.findMany();
+    const clients = await prisma.client.findMany({
+      // skip: 3,
+      // take: 10,
+    })
 
     // Return the fetched rows as a JSON response
     return NextResponse.json(clients);
