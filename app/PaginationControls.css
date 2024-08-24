@@ -1,0 +1,9 @@
+#pagination__container{
+    display: flex;
+    align-items: center;
+    float: right;
+}
+#pagination__container button{
+    width: fit-content;
+    color: black !important;
+}

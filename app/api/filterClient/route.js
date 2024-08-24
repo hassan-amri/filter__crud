@@ -4,13 +4,13 @@ const prisma = new PrismaClient();
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
-    const { name } = req.query;
+    const { country } = req.query;
 
     try {
       const filteredData = await prisma.client.findMany({
         where: {
-          name: {
-            contains: name,
+          country: {
+            contains: 'USA',
             mode: 'insensitive',
           },
         },

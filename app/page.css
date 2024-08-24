@@ -72,7 +72,7 @@
 
 .insert__field{
   background-color: red;
-  width: 230px;
+  width: 250px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -206,6 +206,15 @@ td input {
 
 #table{
 	margin-top: 20px;
+ 
+ 
+}
+
+@media only screen and (max-width:920){
+  #table{
+    
+  }
+
 }
 
 
@@ -233,3 +242,67 @@ td input {
 #new__add__form td input{
   border: 1px solid blue !important;
 }
+
+#add__form__container{
+  
+  margin: 20px 0;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 400px;
+  height: auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* display: none; */
+  z-index: 1;
+  transition: opacity 0.3s ease-in-out;
+  /* opacity: 0; */
+  /* pointer-events: none; */
+
+}
+
+
+
+.add__form table{
+
+  border-collapse: collapse;
+  color: white;
+  margin: 20px 0;
+  padding: 20px;
+  background-color: black;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 400px;
+  height: auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* display: none; */
+  z-index: 1;
+  transition: opacity 0.3s ease-in-out;
+  /* opacity: 0; */
+  /* pointer-events: none; */
+}
+
+.add__form table tbody tr td span{
+  margin: 10px;
+}
+.add__form table tbody tr td input{
+  margin: 10px;
+  color: white;
+}
+

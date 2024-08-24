@@ -2,8 +2,9 @@
 'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation'
+import './PaginationControls.css'
 
-const PaginationControls = ({ hasNextPage, hasPrevPage,dataLength }) => {
+const PaginationControls = ({ hasNextPage, hasPrevPage,dataLength ,pageNumbers}) => {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -11,14 +12,18 @@ const PaginationControls = ({ hasNextPage, hasPrevPage,dataLength }) => {
   const per_page = searchParams.get('per_page') ?? '5'
 
   return (
-    <div className='flex gap-2'>
+    <div className='flex gap-2' id='pagination__container'>
+
       <button
         className='bg-blue-500 text-white p-1'
         disabled={!hasPrevPage}
         onClick={() => {
           router.push(`/?page=${Number(page) - 1}&per_page=${per_page}`)
+         
+
+          
         }}>
-        prev page
+        &lt;&lt;&lt;
       </button>
 
       <div>
@@ -31,7 +36,7 @@ const PaginationControls = ({ hasNextPage, hasPrevPage,dataLength }) => {
         onClick={() => {
           router.push(`/?page=${Number(page) + 1}&per_page=${per_page}`)
         }}>
-        next page
+        &gt;&gt;&gt;
       </button>
     </div>
   )

@@ -12,15 +12,17 @@ import { DataArray } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import PaginationControls from "./PaginationControls";
 
-export default function Home({searchParams}) {
+export default function Home({ searchParams }) {
   const router = useRouter();
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const [newTr, setNewTr] = useState(true);
+  const [newTr, setNewTr] = useState(false);
 
   const targetRef = useRef(null);
+
+  const [startPage, setStartPage] = useState(false);
 
   // filter fields
   const [code, setCode] = useState("");
@@ -68,40 +70,32 @@ export default function Home({searchParams}) {
 
   const [dataCount, setDataCount] = useState();
 
+  const datas = [
+    "entry 1",
+    "entry 2",
+    "entry 3",
+    "entry 4",
+    "entry 5",
+    "entry 6",
+    "entry 7",
+    "entry 8",
+    "entry 9",
+    "entry 10",
+    "entry 11",
+    "entry 12",
+    "entry 13",
+    "entry 14",
+    "entry 15",
+  ];
 
-
-
-
-const datas = [
-  'entry 1',
-  'entry 2',
-  'entry 3',
-  'entry 4',
-  'entry 5',
-  'entry 6',
-  'entry 7',
-  'entry 8',
-  'entry 9',
-  'entry 10',
-  'entry 11',
-  'entry 12',
-  'entry 13',
-  'entry 14',
-  'entry 15',
-
-]
-
-
-  const page = searchParams['page'] ?? '1'
-  const per_page = searchParams['per_page'] ?? '5'
+  const page = searchParams["page"] ?? "1";
+  const per_page = searchParams["per_page"] ?? "5";
 
   // mocked, skipped and limited in the real app
-  const start = (Number(page) - 1) * Number(per_page) // 0, 5, 10 ...
-  const end = start + Number(per_page) // 5, 10, 15 ...
+  const start = (Number(page) - 1) * Number(per_page); // 0, 5, 10 ...
+  const end = start + Number(per_page); // 5, 10, 15 ...
 
-  const entries = datas.slice(start, end)
-
- 
+  const entries = datas.slice(start, end);
 
   const fetchDataCount = async () => {
     try {
@@ -187,31 +181,34 @@ const datas = [
     console.log("data", data);
   };
 
-  useEffect(() => {
-    const filterData = data.filter((client) => {
-      if (
-        client.code.toLowerCase().includes(filterCode.toLowerCase()) &&
-        client.name.toLowerCase().includes(filterName.toLowerCase()) &&
-        client.address.toLowerCase().includes(filterAddress.toLowerCase()) &&
-        client.city.toLowerCase().includes(filterCity.toLowerCase()) &&
-        client.country.toLowerCase().includes(filterCountry.toLowerCase()) &&
-        client.mail.toLowerCase().includes(filterEmail.toLowerCase())
-      ) {
-        return client;
-      }
-    });
+  // useEffect(() => {
+  //   const filterData = data.filter((client) => {
+  //     if (
+  //       client.code.toLowerCase().includes(filterCode.toLowerCase()) &&
+  //       client.name.toLowerCase().includes(filterName.toLowerCase()) &&
+  //       client.address.toLowerCase().includes(filterAddress.toLowerCase()) &&
+  //       client.city.toLowerCase().includes(filterCity.toLowerCase()) &&
+  //       client.country.toLowerCase().includes(filterCountry.toLowerCase()) &&
+  //       client.mail.toLowerCase().includes(filterEmail.toLowerCase())
+  //     ) {
+  //       return client;
+  //     }
+  //   });
 
-    setData(filterData);
+  //   setData(filterData);
 
-    setDataCount(filterData.length);
-  }, [
-    filterCode,
-    filterName,
-    filterAddress,
-    filterCity,
-    filterCountry,
-    filterEmail,
-  ]);
+  //   setStartPage(true)
+
+  //   setDataCount(filterData.length);
+  //   setPageNumber(1)
+  // }, [
+  //   filterCode,
+  //   filterName,
+  //   filterAddress,
+  //   filterCity,
+  //   filterCountry,
+  //   filterEmail,
+  // ]);
 
   //handleToggle
   const handleToggle = () => {
@@ -230,6 +227,90 @@ const datas = [
     setSearchValue(e.target.value);
   };
 
+
+  //add client using Enter keypress
+  
+  // const textInput = document.querySelectorAll('.inputField');
+  // textInput.forEach(txt=>{
+  //   txt.addEventListener('keydown', (event) => {
+  //   if (event.key === 'Enter') {
+  //     // alert('Enter key pressed!');
+  //     // Perform desired actions here
+  //     if(code !== "" || name !== "" || address !== "" || city !== "" || country !== "" || email !== ""){
+  //       try {
+  //         const response =  fetch("/api/addClient", {
+  //           method: "POST",
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //           body: JSON.stringify({
+  //             code,
+  //             name,
+  //             address,
+  //             city,
+  //             country,
+  //             email,
+  //             toggle,
+  //           }),
+  //         });
+  
+  //         if (!response.ok) {
+  //           throw new Error("Failed to add customer");
+  //         }
+  
+  //         setSuccess(true);
+  //       } catch (error) {
+  //         setError(error.message);
+  //       } finally {
+  //         setLoading(false);
+  //       }
+  //       setDataCount(dataCount + 1);
+  //       setInsertCount(0);
+  //       console.log("hassan");
+  //       document.querySelector(".insert__form").style.display = "none";
+  
+  //       const fetchData = async () => {
+  //         try {
+  //           const response = await fetch("/api/clients"); // Replace with your actual API route
+  //           if (!response.ok) {
+  //             throw new Error("Failed to fetch data");
+  //           }
+  //           const jsonData = await response.json();
+  
+  //           setData(jsonData);
+  //         } catch (error) {
+  //           setError(error);
+  //         } finally {
+  //           setLoading(false);
+  //         }
+  //       };
+  
+  //       fetchData();
+  
+  //       // clear the input fields right after inserting and fetching data
+  //       document.querySelectorAll(".inputField").forEach((inputField) => {
+  //         inputField.value = "";
+  //       });
+  
+  //       setCode("");
+  //       setName("");
+  //       setAddress("");
+  //       setCity("");
+  //       setCountry("");
+  //       setEmail("");
+
+  //       document.querySelector(".newBtn").textContent = "New";
+  //       setInsertCount(0);
+  //       setAddedTr(false)
+  //       router.push(`/?page=${Number(Math.floor((data.length/5)+1))}&per_page=${5}`);
+
+
+  //     }
+
+  //   }
+  // });
+  // })
+  
   //handle insert
   const handleInsert = async (e) => {
     // const fetchData = async () => {
@@ -248,79 +329,115 @@ const datas = [
     //     setLoading(false);
     //   }
     // };
-
+    setNewTr(false);
+    setFilterCount(0);
     fetchData();
     setInsertCount(insertCount + 1);
     console.log(insertCount);
     if (insertCount === 0) {
-      
-        targetRef.current?.scrollIntoView({ behavior: 'smooth' });
-      
-      setAddedTr(true);
-      document.querySelector(".insert__form").style.display = "block";
-    }
-    if (insertCount === 1) {
-      try {
-        const response = await fetch("/api/addClient", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            code,
-            name,
-            address,
-            city,
-            country,
-            email,
-            toggle,
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to add customer");
-        }
-
-        setSuccess(true);
-      } catch (error) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
-      setDataCount(dataCount + 1);
-      setInsertCount(0);
-      console.log("hassan");
-      document.querySelector(".insert__form").style.display = "none";
-
-      const fetchData = async () => {
+      const fetchDataCount = async () => {
         try {
-          const response = await fetch("/api/clients"); // Replace with your actual API route
+          const response = await fetch("/api/getClientsCount"); // Replace with your actual API route
           if (!response.ok) {
             throw new Error("Failed to fetch data");
           }
           const jsonData = await response.json();
-
-          setData(jsonData);
+          console.log("data count : ", jsonData);
+    
+          setDataCount(jsonData);
+          console.log("data count hhhh : ", dataCount);
         } catch (error) {
           setError(error);
         } finally {
           setLoading(false);
         }
       };
-
       fetchData();
+       fetchDataCount()
+      console.log("data",dataCount);
+      
+    
+      targetRef.current?.scrollIntoView({ behavior: "smooth" });
+       router.push(`/?page=${Number(Math.floor((data.length/5))+1)}&per_page=${5}`);
+      
+      document.querySelector(".newBtn").textContent = "Save";
+      setAddedTr(true);
+      // document.querySelector(".insert__form").style.display = "block";
+    }
+    if (insertCount === 1) {
+      if(code !== "" || name !== "" || address !== "" || city !== "" || country !== "" || email !== ""){
+        try {
+          const response = await fetch("/api/addClient", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              code,
+              name,
+              address,
+              city,
+              country,
+              email,
+              toggle,
+            }),
+          });
+  
+          if (!response.ok) {
+            throw new Error("Failed to add customer");
+          }
+  
+          setSuccess(true);
+        } catch (error) {
+          setError(error.message);
+        } finally {
+          setLoading(false);
+        }
+        setDataCount(dataCount + 1);
+        setInsertCount(0);
+        console.log("hassan");
+        document.querySelector(".insert__form").style.display = "none";
+  
+        const fetchData = async () => {
+          try {
+            const response = await fetch("/api/clients"); // Replace with your actual API route
+            if (!response.ok) {
+              throw new Error("Failed to fetch data");
+            }
+            const jsonData = await response.json();
+  
+            setData(jsonData);
+          } catch (error) {
+            setError(error);
+          } finally {
+            setLoading(false);
+          }
+        };
+  
+        fetchData();
+  
+        // clear the input fields right after inserting and fetching data
+        document.querySelectorAll(".inputField").forEach((inputField) => {
+          inputField.value = "";
+        });
+  
+        setCode("");
+        setName("");
+        setAddress("");
+        setCity("");
+        setCountry("");
+        setEmail("");
 
-      // clear the input fields right after inserting and fetching data
-      document.querySelectorAll(".inputField").forEach((inputField) => {
-        inputField.value = "";
-      });
+        document.querySelector(".newBtn").textContent = "New";
+        setInsertCount(0);
+        setAddedTr(false)
+        router.push(`/?page=${Number(Math.round((data.length/5)))}&per_page=${5}`);
 
-      setCode("");
-      setName("");
-      setAddress("");
-      setCity("");
-      setCountry("");
-      setEmail("");
+
+      }
+
+
+    
     }
   };
 
@@ -328,10 +445,13 @@ const datas = [
 
   const handleFilter = async () => {
     setFilterCount(filterCount + 1);
-
+    document.querySelector(".newBtn").textContent = "New";
+    setAddedTr(false);
     console.log(filterCount);
+    setInsertCount(0);
     if (filterCount === 0) {
       setNewTr(true);
+      setAddedTr(false);
       setFilterCode("");
       setFilterName("");
       setFilterAddress("");
@@ -363,6 +483,26 @@ const datas = [
     }
 
     if (filterCount === 1) {
+      const filterData = data.filter((client) => {
+        if (
+          client.code.toLowerCase().includes(filterCode.toLowerCase()) &&
+          client.name.toLowerCase().includes(filterName.toLowerCase()) &&
+          client.address.toLowerCase().includes(filterAddress.toLowerCase()) &&
+          client.city.toLowerCase().includes(filterCity.toLowerCase()) &&
+          client.country.toLowerCase().includes(filterCountry.toLowerCase()) &&
+          client.mail.toLowerCase().includes(filterEmail.toLowerCase())
+        ) {
+          return client;
+        }
+      });
+
+      setData(filterData);
+
+      setStartPage(true);
+      router.push(`/?page=${Number(2) - 1}&per_page=${5}`);
+
+      setDataCount(filterData.length);
+      setPageNumber(1);
       // const filtered = data.filter((client) => {
       //   if (filterCategory === "all") {
       //     return (
@@ -393,25 +533,26 @@ const datas = [
       //   }
       // });
 
-      const filterData = data.filter((client) => {
-        if (
-          client.code.toLowerCase().includes(filterCode.toLowerCase()) &&
-          client.name.toLowerCase().includes(filterName.toLowerCase()) &&
-          client.address.toLowerCase().includes(filterAddress.toLowerCase()) &&
-          client.city.toLowerCase().includes(filterCity.toLowerCase()) &&
-          client.country.toLowerCase().includes(filterCountry.toLowerCase()) &&
-          client.mail.toLowerCase().includes(filterEmail.toLowerCase())
-        ) {
-          return client;
-        }
-      });
+      // const filterData = data.filter((client) => {
+      //   if (
+      //     client.code.toLowerCase().includes(filterCode.toLowerCase()) &&
+      //     client.name.toLowerCase().includes(filterName.toLowerCase()) &&
+      //     client.address.toLowerCase().includes(filterAddress.toLowerCase()) &&
+      //     client.city.toLowerCase().includes(filterCity.toLowerCase()) &&
+      //     client.country.toLowerCase().includes(filterCountry.toLowerCase()) &&
+      //     client.mail.toLowerCase().includes(filterEmail.toLowerCase())
+      //   ) {
+      //     return client;
+      //   }
+      // });
 
-      setData(filterData);
+      // setData(filterData);
 
-      setDataCount(filterData.length);
+      // setDataCount(filterData.length);
 
       // console.log(filtered);
       // setData(filtered);
+      setPageNumber(1);
       console.log(data);
       document.querySelector(".new__search__form").style.display = "none";
       setFilterCount(0);
@@ -721,7 +862,6 @@ const datas = [
       <h1 className="listTitle">List of Clients : [{dataCount}]</h1>
 
       <span className="buttons">
-        
         <button
           type="button"
           className="btn btn-primary filterBtn"
@@ -729,22 +869,23 @@ const datas = [
         >
           Filter
         </button>
-        
+
         <br />
         <a href="#new__add__form">
-        <button
-          type="button"
-          className="btn btn-success newBtn"
-          onClick={handleInsert}
-        >
-          New
-        </button></a>
+          <button
+            type="button"
+            className="btn btn-success newBtn"
+            onClick={handleInsert}
+          >
+            New
+          </button>
+        </a>
       </span>
 
       <span className="insert__form">
         <div className="insert__fields">
           <div className="insert__field">
-            <span>Code :</span>
+            <span>Code </span>:
             <input
               type="text"
               placeholder="Code..."
@@ -834,7 +975,7 @@ const datas = [
             <th scope="col">Address</th>
             <th scope="col">City</th>
             <th scope="col">Country</th>
-            <th scope="col">Mail</th>
+            <th scope="col">Email</th>
             <th scope="col">Action</th>
           </tr>
         </thead>
@@ -1022,58 +1163,70 @@ const datas = [
             </tr>
           ))}
           {addedTr && (
-          <tr className="new__search__form" id="new__add__form" ref={targetRef}>
-            <td>
+            <tr
+              className="new__search__form"
+              id="new__add__form"
+              ref={targetRef}
+            >
+              <td>
               <input
-                type="text"
-                placeholder="Add code"
-                value={filterCode}
-                onChange={(e) => setFilterCode(e.target.value)}
-              />
-            </td>
-            <td>
+              type="text"
+              placeholder="Add Code..."
+              className="inputField"
+              defaultValue={code}
+              onChange={(e) => setCode(e.target.value)}
+            />
+              </td>
+              <td>
               <input
-                type="text"
-                placeholder="Add name"
-                value={filterName}
-                onChange={(e) => setFilterName(e.target.value)}
-              />
-            </td>
-            <td>
+              type="text"
+              placeholder="Add Name..."
+              className="inputField"
+              defaultValue={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+              </td>
+              <td>
               <input
-                type="text"
-                placeholder="Add address"
-                value={filterAddress}
-                onChange={(e) => setFilterAddress(e.target.value)}
-              />
-            </td>
-            <td>
+              type="text"
+              placeholder="Add Address..."
+              className="inputField"
+              defaultValue={address}
+              onChange={(e) => setAddress(e.target.value)}
+            />
+              </td>
+              <td>
               <input
-                type="text"
-                placeholder="Add city"
-                value={filterCity}
-                onChange={(e) => setFilterCity(e.target.value)}
-              />
-            </td>
-            <td>
+              type="text"
+              placeholder="Add City..."
+              className="inputField"
+              defaultValue={city}
+              onChange={(e) => setCity(e.target.value)}
+            />
+              </td>
+              <td>
               <input
-                type="text"
-                placeholder="Add country"
-                value={filterCountry}
-                onChange={(e) => setFilterCountry(e.target.value)}
-              />
-            </td>
-            <td>
+              type="text"
+              placeholder="Add Country..."
+              className="inputField"
+              defaultValue={country}
+              onChange={(e) => setCountry(e.target.value)}
+            />
+              </td>
+              <td>
               <input
-                type="text"
-                placeholder="Add mail"
-                value={filterEmail}
-                onChange={(e) => setFilterEmail(e.target.value)}
-              />
-            </td>
-            <td> {toggle ? (
+              type="text"
+              placeholder="Add Email..."
+              className="inputField"
+              defaultValue={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+              </td>
+              <td>
+                {" "}
+                {toggle ? (
               <div>
-                {/* <span className="activeWord">Active :</span>{" "} */}
+                <span className="activeWord">Active :</span>{" "}
                 <ToggleOnIcon
                   className="toggleOn"
                   onClick={() => handleToggle()}
@@ -1081,23 +1234,149 @@ const datas = [
               </div>
             ) : (
               <div>
-                {/* <span className="activeWord">Active :</span>{" "} */}
+                <span className="activeWord">Active :</span>{" "}
                 <ToggleOffIcon
                   className="toggleOff"
                   onClick={() => handleToggle()}
                 />
               </div>
-            )}</td>
-          </tr>
-        )} 
+            )}
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
-     
+
       <PaginationControls
-        dataLength = {data.length}
+        dataLength={data.length}
         hasNextPage={end < data.length}
         hasPrevPage={start > 0}
+        pageNumbers={pageNumber}
       />
+
+     {/* <div className="add__form">
+     <table>
+        <tbody>
+          {" "}
+          <tr>
+            {" "}
+            <td><span>Code</span></td>
+            <td>
+              :{" "}
+              <input
+                type="text"
+                onChange={(e)=>setCode(e.target.value)}
+                placeholder="Type code..."
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><span>Name</span></td>
+            <td>
+              {" "}
+              :{" "}
+              <input
+                type="text"
+                onChange={(e)=>setName(e.target.value)}
+
+                placeholder="type name..."
+              />
+            </td>
+          </tr>
+          <tr>
+            {" "}
+            <td><span>Address</span></td>
+            <td>
+              :{" "}
+              <input
+                type="text"
+                onChange={(e)=>setAddress(e.target.value)}
+
+                placeholder="type address..."
+              />
+            </td>
+          </tr>{" "}
+          <tr>
+            <td><span>City</span></td>
+            <td>
+              {" "}
+              :{" "}
+              <input
+                type="text"
+                onChange={(e)=>setCity(e.target.value)}
+
+                placeholder=" type city..."
+              />
+            </td>
+          </tr>{" "}
+
+          <tr>
+            <td><span>Country</span></td>
+            <td>
+              {" "}
+              :{" "}
+              <input
+                type="text"
+                onChange={(e)=>setCountry(e.target.value)}
+
+                placeholder=" type Country..."
+              />
+            </td>
+          </tr>{" "}
+          
+          <tr>
+            <td><span>Email</span></td>
+            <td>
+              {" "}
+              :{" "}
+              <input
+                type="text"
+                onChange={(e)=>setEmail(e.target.value)}
+
+                placeholder=" type Email..."
+              />
+            </td>
+          </tr>{" "}
+          <tr>
+            <td><span>Active</span></td>
+            <td>
+            :{toggle ? (
+              
+               
+                <ToggleOnIcon
+                  className="toggleOn"
+                  onClick={() => handleToggle()}
+                />
+             
+            ) : (
+             
+               
+                <ToggleOffIcon
+                  className="toggleOff"
+                  onClick={() => handleToggle()}
+                />
+             
+            )}
+            </td>
+          </tr>{" "}
+          
+          
+          {" "}
+          <tr>
+            {" "}
+            <td colSpan="2" id="add__cancel">
+              {" "}
+              <span> &nbsp;</span>{" "}
+              <span>
+                {" "}
+                <button>Add</button> <button>cancel</button>{" "}
+              </span>{" "}
+            </td>{" "}
+          </tr>{" "}
+        </tbody>
+      </table>
+     </div> */}
+
       {/* <nav aria-label="Page navigation example">
         <ul className="pagination">
           <li
