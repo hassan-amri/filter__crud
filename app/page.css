@@ -1,23 +1,126 @@
+body{
+  overflow-x: hidden;
+}
+
+#table{
+  min-width: 100vw !important;
+  display: block;
+  overflow-x: scroll;
+}
+#table::-webkit-scrollbar{
+  /* display: none; */
+  /* background-color: rgb(236, 144, 144,0.5); */
+}
+
+#deleteArea{
+  background-color: blue;
+  padding: 10px;
+  text-align: center;
+}
+#deleteArea div{
+  margin: 10px 0;
+  font-size: 20px;
+}
+#deleteArea button{
+  margin: 0 30px;
+  border: none;
+  cursor: pointer;
+  padding: 5px 15px;
+}
+
+/* Modal Overlay */
+.modalArea {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensure it appears above other content */
+}
+
+/* Modal Content */
+.modalContent {
+  
+  background-color: white; /* White background for the modal */
+  padding: 20px;
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+  text-align: center; /* Center text */
+  display: flex; /* Use flexbox for layout */
+  flex-direction: column; /* Stack children vertically */
+  justify-content: center; /* Center content vertically */
+  align-items: center; /* Center content horizontally */
+  height: auto; /* Allow height to adjust based on content */
+  width: 300px; /* Set a fixed width for the modal */
+}
+
+/* Client Name Styling */
+.clientName {
+  font-weight: bold; /* Bold text for emphasis */
+}
+
+/* Buttons Container */
+.buttonsModal {
+  margin-top: 20px; /* Space between text and buttons */
+  display: flex; /* Use flexbox for buttons */
+  justify-content: center; /* Center buttons horizontally */
+}
+
+/* Button Styles */
+.buttonsModal button {
+  padding: 10px 15px; /* Padding for buttons */
+  margin: 0 5px; /* Space between buttons */
+  border: none; /* Remove default border */
+  border-radius: 5px; /* Rounded corners for buttons */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.3s; /* Smooth background color transition */
+}
+
+/* Yes Button */
+.buttonsModal button:first-child {
+  background-color: #28a745; /* Green background for Yes */
+  color: white; /* White text */
+}
+
+/* No Button */
+.buttonsModal button:last-child {
+  background-color: #dc3545; /* Red background for No */
+  color: white; /* White text */
+}
+
+/* Button Hover Effects */
+.buttonsModal button:hover {
+  opacity: 0.8; /* Slightly fade on hover */
+}
+
+
+#table tbody tr td{
+  white-space: nowrap;
+  width: 16vw;
+}
+
+
+#table tbody tr td input{
+  width: auto;
+  /* display: inline-block; */
+}
+
+
+.second{
+  width: 100%;
+  
+  table-layout: auto;
+
+}
+
 .content {
   padding: 20px 0;
-  
 }
-
-.table-responsive {
-  margin: 30px 0;
-}
-
-
-
-
-
-
-
-
-
-
-
-
 
 .pagination {
   float: right;
@@ -53,36 +156,32 @@
   padding-top: 6px;
 }
 
-
 /* filter form  */
 .filter__form {
   display: none;
 }
 .insert__form {
   display: none;
-
 }
-.insert__fields{
+.insert__fields {
   display: flex;
   align-items: center;
   justify-content: flex-start;
   flex-wrap: wrap;
-
 }
 
-.insert__field{
+.insert__field {
   background-color: red;
   width: 250px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-
 }
-.insert__field span{
+.insert__field span {
   font-size: 14px;
 }
-.insert__field input{
- width: 150px;
+.insert__field input {
+  width: 150px;
 }
 
 .alert__area {
@@ -114,17 +213,11 @@ td input {
   color: rgb(84, 230, 0) !important;
 }
 
-
-
-
-
-
 .idTd input {
   font-weight: bold;
 }
-.resizedField input{
+.resizedField input {
   width: 100px;
-  
 }
 
 .toggleOff {
@@ -135,14 +228,12 @@ td input {
   color: green !important;
   font-size: 30px !important;
 }
-.activeWord{
-	
-	font-size: 18px;
+.activeWord {
+  font-size: 18px;
 }
 
 .activeIcon {
   color: green !important;
-  
 }
 .non-activeIcon {
   color: red !important;
@@ -169,82 +260,63 @@ td input {
 
 .insert__form {
   width: 900px;
-  
 }
 .insert__form input {
   margin: 10px;
 }
 
-
 /* filter form */
-.filter__form{
-	margin-left: 10px;
+.filter__form {
+  margin-left: 10px;
 }
-.filter__form select{
-	
-	padding: 5px ;
+.filter__form select {
+  padding: 5px;
 }
-.filter__form input{
-	margin: 0 10px;
-	padding: 3px 5px;
-	outline: none;
-
+.filter__form input {
+  margin: 0 10px;
+  padding: 3px 5px;
+  outline: none;
 }
 
-.filterBtn{
-  background-color: #003146 !important;
+.filterBtn {
+  background-color: rgb(0, 92, 92)  !important;
   border: none;
 }
-.newBtn{
-  background-color: rgb(0, 4, 61) !important;
+.newBtn {
+  background-color: #4CAF50!important;
   border: none;
 }
 
-.listTitle{
-	margin: 20px 10px 30px 10px;
+
+
+.listTitle {
+  margin: 20px 10px 30px 10px;
 }
 
-#table{
-	margin-top: 20px;
- 
- 
+.idTd input {
+  width: 50px;
+  /* background-color: red; */
 }
 
-@media only screen and (max-width:920){
-  #table{
-    
-  }
-
+#new__search__form td input {
+  border: 0.5px solid green;
 }
 
-
-.idTd input{
-	width: 50px;
-	/* background-color: red; */
-}
-
-#new__search__form td input{
- border: 0.5px solid green;
-  
-}
-
-.new__search__form td input{
+.new__search__form td input {
   /* border: 1px solid rgb(255, 37, 37); */
   padding: 3px;
   background: white;
 }
 
-.new__search__form td input:hover{
+.new__search__form td input:hover {
   cursor: text;
 }
 
-
-#new__add__form td input{
+#new__add__form td input {
   border: 1px solid blue !important;
 }
 
-#add__form__container{
-  
+#add__form__container {
   margin: 20px 0;
   padding: 20px;
   background-color: #f9f9f9;
@@ -266,13 +338,9 @@ td input {
   transition: opacity 0.3s ease-in-out;
   /* opacity: 0; */
   /* pointer-events: none; */
-
 }
 
-
-
-.add__form table{
-
+.add__form table {
   border-collapse: collapse;
   color: white;
   margin: 20px 0;
@@ -298,11 +366,10 @@ td input {
   /* pointer-events: none; */
 }
 
-.add__form table tbody tr td span{
+.add__form table tbody tr td span {
   margin: 10px;
 }
-.add__form table tbody tr td input{
+.add__form table tbody tr td input {
   margin: 10px;
   color: white;
 }
-

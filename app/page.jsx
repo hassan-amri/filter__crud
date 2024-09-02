@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import PaginationControls from "./PaginationControls";
 
 export default function Home({ searchParams }) {
+  const [isModal, setIsModal] = useState(true);
   const router = useRouter();
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
@@ -227,9 +228,8 @@ export default function Home({ searchParams }) {
     setSearchValue(e.target.value);
   };
 
-
   //add client using Enter keypress
-  
+
   // const textInput = document.querySelectorAll('.inputField');
   // textInput.forEach(txt=>{
   //   txt.addEventListener('keydown', (event) => {
@@ -253,11 +253,11 @@ export default function Home({ searchParams }) {
   //             toggle,
   //           }),
   //         });
-  
+
   //         if (!response.ok) {
   //           throw new Error("Failed to add customer");
   //         }
-  
+
   //         setSuccess(true);
   //       } catch (error) {
   //         setError(error.message);
@@ -268,7 +268,7 @@ export default function Home({ searchParams }) {
   //       setInsertCount(0);
   //       console.log("hassan");
   //       document.querySelector(".insert__form").style.display = "none";
-  
+
   //       const fetchData = async () => {
   //         try {
   //           const response = await fetch("/api/clients"); // Replace with your actual API route
@@ -276,7 +276,7 @@ export default function Home({ searchParams }) {
   //             throw new Error("Failed to fetch data");
   //           }
   //           const jsonData = await response.json();
-  
+
   //           setData(jsonData);
   //         } catch (error) {
   //           setError(error);
@@ -284,14 +284,14 @@ export default function Home({ searchParams }) {
   //           setLoading(false);
   //         }
   //       };
-  
+
   //       fetchData();
-  
+
   //       // clear the input fields right after inserting and fetching data
   //       document.querySelectorAll(".inputField").forEach((inputField) => {
   //         inputField.value = "";
   //       });
-  
+
   //       setCode("");
   //       setName("");
   //       setAddress("");
@@ -304,31 +304,14 @@ export default function Home({ searchParams }) {
   //       setAddedTr(false)
   //       router.push(`/?page=${Number(Math.floor((data.length/5)+1))}&per_page=${5}`);
 
-
   //     }
 
   //   }
   // });
   // })
-  
+
   //handle insert
   const handleInsert = async (e) => {
-    // const fetchData = async () => {
-    //   try {
-    //     const response = await fetch("/api/clients"); // Replace with your actual API route
-    //     if (!response.ok) {
-    //       throw new Error("Failed to fetch data");
-    //     }
-    //     const jsonData = await response.json();
-
-    //     setData(jsonData);
-    //     console.log("inserted data", data);
-    //   } catch (error) {
-    //     setError(error);
-    //   } finally {
-    //     setLoading(false);
-    //   }
-    // };
     setNewTr(false);
     setFilterCount(0);
     fetchData();
@@ -343,7 +326,7 @@ export default function Home({ searchParams }) {
           }
           const jsonData = await response.json();
           console.log("data count : ", jsonData);
-    
+
           setDataCount(jsonData);
           console.log("data count hhhh : ", dataCount);
         } catch (error) {
@@ -353,19 +336,34 @@ export default function Home({ searchParams }) {
         }
       };
       fetchData();
-       fetchDataCount()
-      console.log("data",dataCount);
-      
-    
+      fetchDataCount();
+      console.log("data", dataCount);
+
       targetRef.current?.scrollIntoView({ behavior: "smooth" });
-       router.push(`/?page=${Number(Math.floor((data.length/5))+1)}&per_page=${5}`);
-      
-      document.querySelector(".newBtn").textContent = "Save";
+      router.push(
+        `/?page=${Number(Math.floor(data.length / 5) + 1)}&per_page=${5}`
+      );
+
+      document.querySelector(".newBtn").textContent = "Insert";
       setAddedTr(true);
       // document.querySelector(".insert__form").style.display = "block";
     }
     if (insertCount === 1) {
-      if(code !== "" || name !== "" || address !== "" || city !== "" || country !== "" || email !== ""){
+        document.querySelectorAll(".inputField").forEach((inputField) => {
+          
+            inputField.style.backgroundColor = "white";
+            
+          
+        })
+      if (
+        code !== "" &&
+        name !== "" &&
+        address !== "" &&
+        city !== "" &&
+        country !== "" &&
+        email !== ""
+      ) {
+      
         try {
           const response = await fetch("/api/addClient", {
             method: "POST",
@@ -382,11 +380,11 @@ export default function Home({ searchParams }) {
               toggle,
             }),
           });
-  
+
           if (!response.ok) {
             throw new Error("Failed to add customer");
           }
-  
+
           setSuccess(true);
         } catch (error) {
           setError(error.message);
@@ -397,7 +395,7 @@ export default function Home({ searchParams }) {
         setInsertCount(0);
         console.log("hassan");
         document.querySelector(".insert__form").style.display = "none";
-  
+
         const fetchData = async () => {
           try {
             const response = await fetch("/api/clients"); // Replace with your actual API route
@@ -405,7 +403,7 @@ export default function Home({ searchParams }) {
               throw new Error("Failed to fetch data");
             }
             const jsonData = await response.json();
-  
+
             setData(jsonData);
           } catch (error) {
             setError(error);
@@ -413,14 +411,14 @@ export default function Home({ searchParams }) {
             setLoading(false);
           }
         };
-  
+
         fetchData();
-  
+
         // clear the input fields right after inserting and fetching data
         document.querySelectorAll(".inputField").forEach((inputField) => {
           inputField.value = "";
         });
-  
+
         setCode("");
         setName("");
         setAddress("");
@@ -430,14 +428,20 @@ export default function Home({ searchParams }) {
 
         document.querySelector(".newBtn").textContent = "New";
         setInsertCount(0);
-        setAddedTr(false)
-        router.push(`/?page=${Number(Math.round((data.length/5)))}&per_page=${5}`);
-
-
+        setAddedTr(false);
+        router.push(
+          `/?page=${Number(Math.floor(data.length / 5))}&per_page=${5}`
+        );
+      } else {
+        document.querySelectorAll(".inputField").forEach((inputField) => {
+          if (inputField.value === "") {
+            inputField.style.backgroundColor = "rgb(236, 144, 144,0.5)";
+            
+          }
+        })
+        setInsertCount(1);
+        
       }
-
-
-    
     }
   };
 
@@ -503,55 +507,7 @@ export default function Home({ searchParams }) {
 
       setDataCount(filterData.length);
       setPageNumber(1);
-      // const filtered = data.filter((client) => {
-      //   if (filterCategory === "all") {
-      //     return (
-      //       (client.code &&
-      //         client.code.toLowerCase().includes(searchValue.toLowerCase())) ||
-      //       (client.name &&
-      //         client.name.toLowerCase().includes(searchValue.toLowerCase())) ||
-      //       (client.address &&
-      //         client.address
-      //           .toLowerCase()
-      //           .includes(searchValue.toLowerCase())) ||
-      //       (client.city &&
-      //         client.city.toLowerCase().includes(searchValue.toLowerCase())) ||
-      //       (client.country &&
-      //         client.country
-      //           .toLowerCase()
-      //           .includes(searchValue.toLowerCase())) ||
-      //       (client.email &&
-      //         client.email.toLowerCase().includes(searchValue.toLowerCase()))
-      //     );
-      //   } else {
-      //     return (
-      //       client[filterCategory] &&
-      //       client[filterCategory]
-      //         .toLowerCase()
-      //         .includes(searchValue.toLowerCase())
-      //     );
-      //   }
-      // });
 
-      // const filterData = data.filter((client) => {
-      //   if (
-      //     client.code.toLowerCase().includes(filterCode.toLowerCase()) &&
-      //     client.name.toLowerCase().includes(filterName.toLowerCase()) &&
-      //     client.address.toLowerCase().includes(filterAddress.toLowerCase()) &&
-      //     client.city.toLowerCase().includes(filterCity.toLowerCase()) &&
-      //     client.country.toLowerCase().includes(filterCountry.toLowerCase()) &&
-      //     client.mail.toLowerCase().includes(filterEmail.toLowerCase())
-      //   ) {
-      //     return client;
-      //   }
-      // });
-
-      // setData(filterData);
-
-      // setDataCount(filterData.length);
-
-      // console.log(filtered);
-      // setData(filtered);
       setPageNumber(1);
       console.log(data);
       document.querySelector(".new__search__form").style.display = "none";
@@ -560,53 +516,60 @@ export default function Home({ searchParams }) {
     }
   };
 
+  // removeModal
+  const removeModal = () => {
+    document.querySelector(".modalArea").style.display = "none";
+    document.querySelector(".clientName").textContent = "";
+  };
+
+  // handle modal
+  const handleModal = (clientName, clientId) => {
+    localStorage.setItem("clientId", clientId);
+    localStorage.setItem("clientName", clientName);
+    document.querySelector(".clientName").textContent =
+      localStorage.getItem("clientName");
+
+    document.querySelector(".modalArea").style.display = "flex";
+  };
+
   // handle delete
+  const [deleteCounter, setDeleteCounter] = useState(0);
   const handleDelete = async (clientId) => {
-    if (confirm("Are you sure you want to delete this customer?")) {
-      try {
-        const response = await fetch("/api/deleteClient", {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ id: clientId }),
-        });
+    try {
+      const response = await fetch("/api/deleteClient", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: clientId }),
+      });
 
-        // const data = await response.json();
+      // const data = await response.json();
 
-        if (response.ok) {
-          setDataCount(dataCount - 1);
-          window.location.reload();
+      if (response.ok) {
+        setDataCount(dataCount - 1);
+        
+        // window.location.reload();
+        router.push(
+          `/?page=${1}&per_page=${5}`
+        );
+        document.querySelector(".modalArea").style.display = "none";
+        document.querySelector(".clientName").textContent = "";
 
-          //     const fetchData = async () => {
-          //   try {
-          //     const response = await fetch("/api/clients"); // Replace with your actual API route
-          //     if (!response.ok) {
-          //       throw new Error("Failed to fetch data");
-          //     }
-          //     const jsonData = await response.json();
+        fetchData();
 
-          //     setData(jsonData);
-          //   } catch (error) {
-          //     setError(error);
-          //   } finally {
-          //     setLoading(false);
-          //   }
-          // };
-
-          // fetchData();
-          // Additional actions after successful deletion
-        } else {
-          //  setMessage('Failed to delete customer. Error: ' + data.error);
-        }
-      } catch (error) {
-        console.error("Error:", error);
-        setMessage("An error occurred while deleting customer.");
+         
+        
+        // Additional actions after successful deletion
+      } else {
+        //  setMessage('Failed to delete customer. Error: ' + data.error);
       }
-    } else {
-      // Code to cancel the deletion
-      alert("Deletion cancelled.");
+    } catch (error) {
+      console.error("Error:", error);
+      setMessage("An error occurred while deleting customer.");
     }
+  
+
   };
 
   //handle update
@@ -699,160 +662,6 @@ export default function Home({ searchParams }) {
     }
 
     // console.log(customerId);
-  };
-
-  //handle pagination
-  const handlePagination = (clickedNumber) => {
-    window.scrollTo(0, 0);
-    const getStorage = localStorage.getItem("lastPage");
-    console.log(clickedNumber);
-
-    if (clickedNumber === "Previous") {
-      if (getStorage === "2") {
-        localStorage.setItem("lastPage", "1");
-        const fetchData = async () => {
-          try {
-            const response = await fetch("/api/clients"); // Replace with your actual API route
-            if (!response.ok) {
-              throw new Error("Failed to fetch data");
-            }
-            const jsonData = await response.json();
-
-            return setData(jsonData.slice(0, 10));
-          } catch (error) {
-            setError(error);
-          } finally {
-            setLoading(false);
-          }
-        };
-
-        fetchData();
-      }
-      if (getStorage === "3") {
-        localStorage.setItem("lastPage", "2");
-        const fetchData = async () => {
-          try {
-            const response = await fetch("/api/clients"); // Replace with your actual API route
-            if (!response.ok) {
-              throw new Error("Failed to fetch data");
-            }
-            const jsonData = await response.json();
-
-            return setData(jsonData.slice(10, 20));
-          } catch (error) {
-            setError(error);
-          } finally {
-            setLoading(false);
-          }
-        };
-
-        fetchData();
-      }
-    }
-
-    if (clickedNumber === "Next") {
-      if (getStorage === "1") {
-        localStorage.setItem("lastPage", "2");
-        const fetchData = async () => {
-          try {
-            const response = await fetch("/api/clients"); // Replace with your actual API route
-            if (!response.ok) {
-              throw new Error("Failed to fetch data");
-            }
-            const jsonData = await response.json();
-
-            return setData(jsonData.slice(10, 20));
-          } catch (error) {
-            setError(error);
-          } finally {
-            setLoading(false);
-          }
-        };
-
-        fetchData();
-      }
-      if (getStorage === "2") {
-        localStorage.setItem("lastPage", "3");
-        const fetchData = async () => {
-          try {
-            const response = await fetch("/api/clients"); // Replace with your actual API route
-            if (!response.ok) {
-              throw new Error("Failed to fetch data");
-            }
-            const jsonData = await response.json();
-
-            return setData(jsonData.slice(20, 30));
-          } catch (error) {
-            setError(error);
-          } finally {
-            setLoading(false);
-          }
-        };
-
-        fetchData();
-      }
-    }
-
-    if (Number(clickedNumber) === 1) {
-      const fetchData = async () => {
-        try {
-          const response = await fetch("/api/clients"); // Replace with your actual API route
-          if (!response.ok) {
-            throw new Error("Failed to fetch data");
-          }
-          const jsonData = await response.json();
-
-          return setData(jsonData.slice(0, 10));
-        } catch (error) {
-          setError(error);
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      fetchData();
-      localStorage.setItem("lastPage", clickedNumber);
-    }
-    if (Number(clickedNumber) === 2) {
-      const fetchData = async () => {
-        try {
-          const response = await fetch("/api/clients"); // Replace with your actual API route
-          if (!response.ok) {
-            throw new Error("Failed to fetch data");
-          }
-          const jsonData = await response.json();
-
-          return setData(jsonData.slice(10, 20));
-        } catch (error) {
-          setError(error);
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      fetchData();
-      localStorage.setItem("lastPage", clickedNumber);
-    }
-    if (Number(clickedNumber) === 3) {
-      const fetchData = async () => {
-        try {
-          const response = await fetch("/api/clients"); // Replace with your actual API route
-          if (!response.ok) {
-            throw new Error("Failed to fetch data");
-          }
-          const jsonData = await response.json();
-
-          return setData(jsonData.slice(20, 30));
-        } catch (error) {
-          setError(error);
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      fetchData();
-      localStorage.setItem("lastPage", clickedNumber);
-    }
   };
 
   const [success, setSuccess] = useState(false);
@@ -970,7 +779,9 @@ export default function Home({ searchParams }) {
       <table id="table" className="table table-striped">
         <thead>
           <tr>
-            <th scope="col">Code</th>
+            <th scope="col" className="codeField">
+              Code
+            </th>
             <th scope="col">Name</th>
             <th scope="col">Address</th>
             <th scope="col">City</th>
@@ -1148,7 +959,7 @@ export default function Home({ searchParams }) {
               <td className="iconsTd">
                 <DeleteIcon
                   className="deleteIcon"
-                  onClick={() => handleDelete(user.id)}
+                  onClick={() => handleModal(user.name, user.id)}
                 />
                 <EditIcon
                   className="updateIcon"
@@ -1162,6 +973,7 @@ export default function Home({ searchParams }) {
               </td>
             </tr>
           ))}
+
           {addedTr && (
             <tr
               className="new__search__form"
@@ -1169,78 +981,78 @@ export default function Home({ searchParams }) {
               ref={targetRef}
             >
               <td>
-              <input
-              type="text"
-              placeholder="Add Code..."
-              className="inputField"
-              defaultValue={code}
-              onChange={(e) => setCode(e.target.value)}
-            />
+                <input
+                  type="text"
+                  placeholder="Add Code..."
+                  className="inputField"
+                  defaultValue={code}
+                  onChange={(e) => setCode(e.target.value)}
+                />
               </td>
               <td>
-              <input
-              type="text"
-              placeholder="Add Name..."
-              className="inputField"
-              defaultValue={name}
-              onChange={(e) => setName(e.target.value)}
-            />
+                <input
+                  type="text"
+                  placeholder="Add Name..."
+                  className="inputField"
+                  defaultValue={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
               </td>
               <td>
-              <input
-              type="text"
-              placeholder="Add Address..."
-              className="inputField"
-              defaultValue={address}
-              onChange={(e) => setAddress(e.target.value)}
-            />
+                <input
+                  type="text"
+                  placeholder="Add Address..."
+                  className="inputField"
+                  defaultValue={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                />
               </td>
               <td>
-              <input
-              type="text"
-              placeholder="Add City..."
-              className="inputField"
-              defaultValue={city}
-              onChange={(e) => setCity(e.target.value)}
-            />
+                <input
+                  type="text"
+                  placeholder="Add City..."
+                  className="inputField"
+                  defaultValue={city}
+                  onChange={(e) => setCity(e.target.value)}
+                />
               </td>
               <td>
-              <input
-              type="text"
-              placeholder="Add Country..."
-              className="inputField"
-              defaultValue={country}
-              onChange={(e) => setCountry(e.target.value)}
-            />
+                <input
+                  type="text"
+                  placeholder="Add Country..."
+                  className="inputField"
+                  defaultValue={country}
+                  onChange={(e) => setCountry(e.target.value)}
+                />
               </td>
               <td>
-              <input
-              type="text"
-              placeholder="Add Email..."
-              className="inputField"
-              defaultValue={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+                <input
+                  type="text"
+                  placeholder="Add Email..."
+                  className="inputField"
+                  defaultValue={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
               </td>
               <td>
                 {" "}
                 {toggle ? (
-              <div>
-                <span className="activeWord">Active :</span>{" "}
-                <ToggleOnIcon
-                  className="toggleOn"
-                  onClick={() => handleToggle()}
-                />
-              </div>
-            ) : (
-              <div>
-                <span className="activeWord">Active :</span>{" "}
-                <ToggleOffIcon
-                  className="toggleOff"
-                  onClick={() => handleToggle()}
-                />
-              </div>
-            )}
+                  <div>
+                    <span className="activeWord">Active :</span>{" "}
+                    <ToggleOnIcon
+                      className="toggleOn"
+                      onClick={() => handleToggle()}
+                    />
+                  </div>
+                ) : (
+                  <div>
+                    <span className="activeWord">Active :</span>{" "}
+                    <ToggleOffIcon
+                      className="toggleOff"
+                      onClick={() => handleToggle()}
+                    />
+                  </div>
+                )}
               </td>
             </tr>
           )}
@@ -1254,7 +1066,24 @@ export default function Home({ searchParams }) {
         pageNumbers={pageNumber}
       />
 
-     {/* <div className="add__form">
+      <div className="modalArea">
+        <div className="modalContent">
+          <div>
+            Are you sure you want to delete <span className="clientName"></span>{" "}
+            ?
+          </div>
+          <div className="buttonsModal">
+            <button
+              onClick={() => handleDelete(localStorage.getItem("clientId"))}
+            >
+              Yes
+            </button>
+            <button onClick={removeModal}>No</button>
+          </div>
+        </div>
+      </div>
+
+      {/* <div className="add__form">
      <table>
         <tbody>
           {" "}
