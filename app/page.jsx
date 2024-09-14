@@ -1,6 +1,12 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { DownloadTableExcel } from "react-export-table-to-excel";
 import "./page.css";
+import 'table2excel';
+
+
+
+import CheckIcon from '@mui/icons-material/Check';  //check icon
 import { PrismaClient } from "@prisma/client";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -11,8 +17,10 @@ import Link from "next/link";
 import { DataArray } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import PaginationControls from "./PaginationControls";
+import Header from "./Header";
 
 export default function Home({ searchParams }) {
+  const tableRef = useRef(null);
   const [isModal, setIsModal] = useState(true);
   const router = useRouter();
   const [data, setData] = useState([]);
@@ -109,6 +117,7 @@ export default function Home({ searchParams }) {
 
       setDataCount(jsonData);
       console.log("data count hhhh : ", dataCount);
+      
     } catch (error) {
       setError(error);
     } finally {
@@ -349,12 +358,9 @@ export default function Home({ searchParams }) {
       // document.querySelector(".insert__form").style.display = "block";
     }
     if (insertCount === 1) {
-        document.querySelectorAll(".inputField").forEach((inputField) => {
-          
-            inputField.style.backgroundColor = "white";
-            
-          
-        })
+      document.querySelectorAll(".inputField").forEach((inputField) => {
+        inputField.style.backgroundColor = "white";
+      });
       if (
         code !== "" &&
         name !== "" &&
@@ -363,7 +369,6 @@ export default function Home({ searchParams }) {
         country !== "" &&
         email !== ""
       ) {
-      
         try {
           const response = await fetch("/api/addClient", {
             method: "POST",
@@ -436,11 +441,9 @@ export default function Home({ searchParams }) {
         document.querySelectorAll(".inputField").forEach((inputField) => {
           if (inputField.value === "") {
             inputField.style.backgroundColor = "rgb(236, 144, 144,0.5)";
-            
           }
-        })
+        });
         setInsertCount(1);
-        
       }
     }
   };
@@ -494,10 +497,12 @@ export default function Home({ searchParams }) {
           client.address.toLowerCase().includes(filterAddress.toLowerCase()) &&
           client.city.toLowerCase().includes(filterCity.toLowerCase()) &&
           client.country.toLowerCase().includes(filterCountry.toLowerCase()) &&
-          client.mail.toLowerCase().includes(filterEmail.toLowerCase())
+          client.mail.toLowerCase().includes(filterEmail.toLowerCase()) &&
+          client.active === toggle
         ) {
           return client;
         }
+       
       });
 
       setData(filterData);
@@ -548,18 +553,14 @@ export default function Home({ searchParams }) {
 
       if (response.ok) {
         setDataCount(dataCount - 1);
-        
+
         // window.location.reload();
-        router.push(
-          `/?page=${1}&per_page=${5}`
-        );
+        router.push(`/?page=${1}&per_page=${5}`);
         document.querySelector(".modalArea").style.display = "none";
         document.querySelector(".clientName").textContent = "";
 
         fetchData();
 
-         
-        
         // Additional actions after successful deletion
       } else {
         //  setMessage('Failed to delete customer. Error: ' + data.error);
@@ -568,8 +569,6 @@ export default function Home({ searchParams }) {
       console.error("Error:", error);
       setMessage("An error occurred while deleting customer.");
     }
-  
-
   };
 
   //handle update
@@ -666,30 +665,47 @@ export default function Home({ searchParams }) {
 
   const [success, setSuccess] = useState(false);
 
+
+  const Table2Excel = window.Table2Excel;
+
+  const exportTableToExcel = () => {
+    var table2excel = new Table2Excel();
+  table2excel.export(document.querySelectorAll("#table"));
+
+  }
+  
+  
   return (
     <div className="content">
-      <h1 className="listTitle">List of Clients : [{dataCount}]</h1>
+      <Header />
+      <div className="list__button">
+        <h1 className="listTitle">List of Clients : [{dataCount}]</h1>
 
-      <span className="buttons">
-        <button
-          type="button"
-          className="btn btn-primary filterBtn"
-          onClick={handleFilter}
-        >
-          Filter
-        </button>
-
-        <br />
-        <a href="#new__add__form">
+        <span className="buttons">
           <button
             type="button"
-            className="btn btn-success newBtn"
-            onClick={handleInsert}
+            className="btn btn-primary filterBtn"
+            onClick={handleFilter}
           >
-            New
+            Filter
           </button>
-        </a>
-      </span>
+
+          <br />
+          <a href="#new__add__form">
+            <button
+              type="button"
+              className="btn btn-success newBtn"
+              onClick={handleInsert}
+            >
+              New
+            </button>
+          </a>
+          <button className="import">Import</button>
+          
+            <button className="export"  onClick={()=>exportTableToExcel('table')} >Export</button>
+          
+        </span>
+      </div>
 
       <span className="insert__form">
         <div className="insert__fields">
@@ -776,7 +792,7 @@ export default function Home({ searchParams }) {
         </div>
       </span>
 
-      <table id="table" className="table table-striped">
+      <table id="table" className="table table-striped" ref={tableRef}>
         <thead>
           <tr>
             <th scope="col" className="codeField">
@@ -842,6 +858,27 @@ export default function Home({ searchParams }) {
                   onChange={(e) => setFilterEmail(e.target.value)}
                 />
               </td>
+              
+                {" "}
+                {toggle ? (
+                  <td>
+                    
+                    <ToggleOnIcon
+                      className="toggleOn filter__active"
+                      onClick={() => handleToggle()}
+                    />
+                  </td>
+                ) : (
+                  <td>
+                   
+                    <ToggleOffIcon
+                      className="toggleOff filter__active"
+                      onClick={() => handleToggle()}
+                    />
+                  </td>
+                )}
+              
+
             </tr>
           )}
 
