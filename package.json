@@ -22,7 +22,8 @@
     "react-dom": "^18",
     "react-export-table-to-excel": "^1.0.6",
     "react-transition-group": "^4.4.5",
-    "table2excel": "^1.0.4"
+    "table2excel": "^1.0.4",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/node": "^20.14.11",

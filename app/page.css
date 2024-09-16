@@ -29,6 +29,10 @@ body {
   margin-left: 20px !important;
 }
 
+.codeInput{
+  width: 60px !important;
+}
+
 
 #deleteArea {
   background-color: blue;
@@ -118,7 +122,11 @@ body {
 #table tbody tr td {
   white-space: nowrap;
   text-overflow: ellipsis;
-  max-width: 210px;
+  /* max-width: 210px; */
+  overflow-x: scroll;
+}
+#table tbody tr td::-webkit-scrollbar{
+  display: none;
 }
 
 #table tbody tr td input {
@@ -385,4 +393,60 @@ td input {
 .add__form table tbody tr td input {
   margin: 10px;
   color: white;
+}
+
+
+.doubleClickModal {
+  display: none;
+  position: fixed; /* Position the modal table fixed */
+  top: 50%; /* Position the top edge of the modal at 50% of the screen height */
+  left: 50%; /* Position the left edge of the modal at 50% of the screen width */
+  transform: translate(-50%, -50%); /* Center the modal by moving it up and left by 50% of its own size */
+  width: 100%;
+  max-width: 400px;
+  border-collapse: collapse;
+  background-color: #ffffff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+  border-radius: 8px;
+  overflow: hidden;
+  z-index: 999; /* Set a high z-index to ensure the modal appears on top */
+}
+
+.doubleClickModal td {
+  padding: 15px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.doubleClickModal td span {
+  font-weight: bold;
+}
+
+.doubleClickModal input[type="text"],
+.doubleClickModal textarea {
+  width: calc(100% - 20px);
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  transition: border-color 0.3s;
+}
+
+.doubleClickModal input[type="text"]:focus,
+.doubleClickModal textarea:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.doubleClickModal button {
+  padding: 10px 15px;
+  margin-right: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.doubleClickModal button:hover {
+  background-color: #0056b3;
 }

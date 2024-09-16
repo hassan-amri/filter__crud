@@ -2,11 +2,10 @@
 import { useEffect, useRef, useState } from "react";
 import { DownloadTableExcel } from "react-export-table-to-excel";
 import "./page.css";
-import 'table2excel';
+import "table2excel";
+import * as XLSX from "xlsx";
 
-
-
-import CheckIcon from '@mui/icons-material/Check';  //check icon
+import CheckIcon from "@mui/icons-material/Check"; //check icon
 import { PrismaClient } from "@prisma/client";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -20,6 +19,10 @@ import PaginationControls from "./PaginationControls";
 import Header from "./Header";
 
 export default function Home({ searchParams }) {
+  // reports states
+  
+
+  const [r__message, setRmessage] = useState("");
   const tableRef = useRef(null);
   const [isModal, setIsModal] = useState(true);
   const router = useRouter();
@@ -117,7 +120,6 @@ export default function Home({ searchParams }) {
 
       setDataCount(jsonData);
       console.log("data count hhhh : ", dataCount);
-      
     } catch (error) {
       setError(error);
     } finally {
@@ -156,7 +158,7 @@ export default function Home({ searchParams }) {
           throw new Error("Failed to fetch data");
         }
         const jsonData = await response.json();
-        console.log(jsonData);
+        console.log("json : ", jsonData);
 
         setData(jsonData);
       } catch (error) {
@@ -170,6 +172,31 @@ export default function Home({ searchParams }) {
     fetchData();
 
     fetchDataCount();
+  }, []);
+
+  // get reports
+
+  const [reports, setReports] = useState([]);
+  useEffect(() => {
+    const fetchReports = async () => {
+      try {
+        const response = await fetch("/api/getReports"); // Replace with your actual API route
+        if (!response.ok) {
+          throw new Error("Failed to fetch data");
+        }
+        const jsonData = await response.json();
+        console.log(jsonData);
+
+        setReports(jsonData);
+      } catch (error) {
+        setError(error);
+      } finally {
+        setLoading(false);
+      }
+      console.log("reports :", reports);
+    };
+
+    fetchReports();
   }, []);
 
   // useEffect for filter inputs
@@ -448,6 +475,43 @@ export default function Home({ searchParams }) {
     }
   };
 
+  // add reports
+  const [r__name,setNaame] = useState("")
+  const [r__email,setEmmail] = useState("")
+  const addReports = async () => {
+    if (document.querySelector(".doubleClickMessage").value !== "") {
+      try {
+        const response = await fetch("/api/addReports", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            r__name,
+            r__email,
+            r__message,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to add report");
+        }
+
+        setSuccess(true);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    document.querySelector(".doubleClickName").value = '';
+    document.querySelector(".doubleClickEmail").value = '';
+    document.querySelector(".doubleClickMessage").value = '';
+    
+
+    // clear the input fields right after inserting and fetching data
+  };
   //handle filter
 
   const handleFilter = async () => {
@@ -502,7 +566,6 @@ export default function Home({ searchParams }) {
         ) {
           return client;
         }
-       
       });
 
       setData(filterData);
@@ -665,15 +728,54 @@ export default function Home({ searchParams }) {
 
   const [success, setSuccess] = useState(false);
 
-
   const Table2Excel = window.Table2Excel;
 
   const exportTableToExcel = () => {
     var table2excel = new Table2Excel();
-  table2excel.export(document.querySelectorAll("#table"));
+    table2excel.export(document.querySelector("#table"));
+  };
 
-  }
-  
+  const HandleDoubleClick = (clientName, clientEmail) => {
+    document.querySelector(".doubleClickModal").style.display = "block";
+    document.querySelector(".doubleClickName").value = clientName;
+    document.querySelector(".doubleClickEmail").value = clientEmail;
+    setNaame(clientName);
+    setEmmail(clientEmail);
+  };
+
+  const removeDoubleClickModal = () => {
+    document.querySelector(".doubleClickModal").style.display = "none";
+  };
+
+  // import
+
+  const [fileData, setFileData] = useState([]);
+
+  const readExcel = (file) => {
+    const promise = new Promise((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.readAsArrayBuffer(file);
+      fileReader.onload = (e) => {
+        const bufferArray = e.target.result;
+        const wb = XLSX.read(bufferArray, {
+          type: "buffer",
+        });
+        const wsname = wb.SheetNames[0];
+        const ws = wb.Sheets[wsname];
+        const data = XLSX.utils.sheet_to_json(ws);
+        console.log(data);
+        resolve(data);
+      };
+      fileReader.onerror = (error) => {
+        reject(error);
+      };
+    });
+    promise.then((d) => {
+      setData(d);
+    });
+  };
+
+  // close report modal
   
   return (
     <div className="content">
@@ -700,10 +802,14 @@ export default function Home({ searchParams }) {
               New
             </button>
           </a>
-          <button className="import">Import</button>
-          
-            <button className="export"  onClick={()=>exportTableToExcel('table')} >Export</button>
-          
+
+          <button className="import">Imoort</button>
+          <button
+            className="export"
+            onClick={() => exportTableToExcel("table")}
+          >
+            Export
+          </button>
         </span>
       </div>
 
@@ -857,34 +963,31 @@ export default function Home({ searchParams }) {
                   value={filterEmail}
                   onChange={(e) => setFilterEmail(e.target.value)}
                 />
-              </td>
-              
-                {" "}
-                {toggle ? (
-                  <td>
-                    
-                    <ToggleOnIcon
-                      className="toggleOn filter__active"
-                      onClick={() => handleToggle()}
-                    />
-                  </td>
-                ) : (
-                  <td>
-                   
-                    <ToggleOffIcon
-                      className="toggleOff filter__active"
-                      onClick={() => handleToggle()}
-                    />
-                  </td>
-                )}
-              
-
+              </td>{" "}
+              {toggle ? (
+                <td>
+                  <ToggleOnIcon
+                    className="toggleOn filter__active"
+                    onClick={() => handleToggle()}
+                  />
+                </td>
+              ) : (
+                <td>
+                  <ToggleOffIcon
+                    className="toggleOff filter__active"
+                    onClick={() => handleToggle()}
+                  />
+                </td>
+              )}
             </tr>
           )}
 
-          {/* slice(0,10) */}
-          {data.slice(start, end).map((user, index) => (
-            <tr key={index}>
+          {/* slice(0,10) => .slice(start, end) */}
+          {data.map((user, index) => (
+            <tr
+              key={index}
+              onDoubleClick={() => HandleDoubleClick(user.name, user.mail)}
+            >
               <td className="resizedField">
                 {isControlled ? (
                   <input
@@ -893,6 +996,7 @@ export default function Home({ searchParams }) {
                     readOnly
                     data-client-id={user.id}
                     value={user.code}
+                    className="codeInput"
                   />
                 ) : (
                   <input
@@ -900,6 +1004,7 @@ export default function Home({ searchParams }) {
                     onChange={(e) => setCode(e.target.value)}
                     data-client-id={user.id}
                     defaultValue={user.code}
+                    className="codeInput"
                   />
                 )}
               </td>
@@ -1011,6 +1116,10 @@ export default function Home({ searchParams }) {
             </tr>
           ))}
 
+          {/* {reports.map(reporter=>(
+            <h1>{reporter.name}</h1>
+          ))} */}
+
           {addedTr && (
             <tr
               className="new__search__form"
@@ -1096,12 +1205,12 @@ export default function Home({ searchParams }) {
         </tbody>
       </table>
 
-      <PaginationControls
+      {/* <PaginationControls
         dataLength={data.length}
         hasNextPage={end < data.length}
         hasPrevPage={start > 0}
         pageNumbers={pageNumber}
-      />
+      /> */}
 
       <div className="modalArea">
         <div className="modalContent">
@@ -1119,6 +1228,60 @@ export default function Home({ searchParams }) {
           </div>
         </div>
       </div>
+
+      {/* double click modal */}
+      <table className="doubleClickModal">
+        <tr>
+          <td>
+            <span>Name </span>
+          </td>
+          <td>
+            {" "}
+            : <input type="text" className="doubleClickName" />
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <span>Email </span>
+          </td>
+          <td>
+            {" "}
+            : <input type="text" className="doubleClickEmail" />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <span>Report </span>
+          </td>
+          <td>
+            {" "}
+            : <textarea className="doubleClickMessage"  onChange={(e)=>setRmessage(e.target.value)} name="" id=""></textarea>
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>
+            <button onClick={removeDoubleClickModal}>Close</button>
+            <button onClick={() => addReports()}>Add</button>
+          </td>
+        </tr>
+      </table>
+      {/* <div className="doubleClickModal">
+        <br />
+        <span>Name :</span> <input type="text" className="doubleClickName" />
+        <br />
+        <span>Address :</span>{" "}
+        <input type="text" className="doubleClickAddress" />
+        <br />
+        <span>City :</span> <input type="text" className="doubleClickCity" />
+        <br />
+        <span>Country :</span>{" "}
+        <input type="text" className="doubleClickCountry" />
+        <br />
+        <span>Email :</span> <input type="text" className="doubleClickEmail" />
+        <br />
+      </div> */}
 
       {/* <div className="add__form">
      <table>
