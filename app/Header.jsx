@@ -13,16 +13,16 @@ function Header() {
         <label className="logo">HIKMATEX</label>
         <ul>
           <li className="active">
-            <Link href="/">Home</Link>
+            <Link className="txtDecor" href="/">Home</Link>
           </li>
           <li>
-            <Link href="/about">About</Link>
+            <Link className="txtDecor" href="/about">About</Link>
           </li>
           <li>
-            <Link href="/feedback">Feedback</Link>
+            <Link className="txtDecor" href="/feedback">Feedback</Link>
           </li>
           <li>
-            <Link href="/reports">Reports</Link>
+            <Link className="txtDecor" href="/reports">Reports</Link>
           </li>
         </ul>
       </nav>

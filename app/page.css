@@ -448,7 +448,7 @@ td input {
 }
 
 .doubleClickModal button:hover {
-  background-color: #0056b3;
+  /* background-color: #0056b3; */
 }
 
 .AddedSuccessfully{
@@ -470,4 +470,10 @@ td input {
   animation: fadeIn 0.5s ease-in-out;
   
 
+}
+
+.doubleClickReportType{
+  border: 1px solid gray;
+  outline: none;
+  padding: 5px 10px;
 }

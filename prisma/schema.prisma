@@ -31,5 +31,6 @@ model Reports {
   id       Int      @id @default(autoincrement())
   name     String 
   mail     String
+  type  String
   message String
 }

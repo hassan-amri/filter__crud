@@ -31,13 +31,14 @@ function page() {
   return (
     <div>
       <Header />
-      <h2>reports</h2>
+      <h2 className="reports__title">All Reports :</h2>
       <div class="table-container">
     <table class="reports-table">
         <thead>
             <tr>
                 <th>Name</th>
                 <th>Email</th>
+                <th>Type</th>
                 <th>Message</th>
             </tr>
         </thead>
@@ -46,6 +47,7 @@ function page() {
                 <tr key={index}>
                     <td>{report.name}</td>
                     <td>{report.mail}</td>
+                    <td>{report.type}</td>
                     <td className="message-cell">{report.message}</td>
                 </tr>
             ))}

@@ -1,15 +1,16 @@
 /* Container for overflow */
 .table-container {
+    width: 100vw;
     overflow-x: auto; /* Enables horizontal scrolling */
     margin: 20px 0; /* Margin around the table */
 }
 
 /* General table styles */
 .reports-table {
-    width: 100%; /* Full width */
+    width: 100vw; /* Full width */
     border-collapse: separate; /* Separate borders for rounded corners */
     border-radius: 8px; /* Rounded corners */
-    overflow: hidden; /* Hide overflow for rounded corners */
+     /* Hide overflow for rounded corners */
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
 }
 
@@ -60,4 +61,8 @@
     .message-cell {
         max-height: 60px; /* Adjust max height for mobile devices if needed */
     }
+}
+
+.reports__title{
+    margin: 20px;
 }

@@ -477,6 +477,8 @@ export default function Home({ searchParams }) {
   // add reports
   const [r__name, setNaame] = useState("");
   const [r__email, setEmmail] = useState("");
+  const [r__type, setType] = useState("");
+  
   const addReports = async () => {
     if (document.querySelector(".doubleClickMessage").value !== "") {
       try {
@@ -488,6 +490,7 @@ export default function Home({ searchParams }) {
           body: JSON.stringify({
             r__name,
             r__email,
+            r__type,
             r__message,
           }),
         });
@@ -497,6 +500,10 @@ export default function Home({ searchParams }) {
         }
 
         setSuccess(true);
+        document.querySelector(".AddedSuccessfully").style.display = "block";
+    setTimeout(()=>{
+      document.querySelector(".AddedSuccessfully").style.display = "none";
+    },2000)
       } catch (error) {
         setError(error.message);
       } finally {
@@ -505,15 +512,12 @@ export default function Home({ searchParams }) {
 
       
     }
-    
+    document.querySelector(".doubleClickReportType").value = "select"
     document.querySelector(".doubleClickModal").style.display = "none";
     document.querySelector(".doubleClickName").value = "";
     document.querySelector(".doubleClickEmail").value = "";
     document.querySelector(".doubleClickMessage").value = "";
-    document.querySelector(".AddedSuccessfully").style.display = "block";
-    setTimeout(()=>{
-      document.querySelector(".AddedSuccessfully").style.display = "none";
-    },2000)
+    
 
     // clear the input fields right after inserting and fetching data
   };
@@ -746,6 +750,7 @@ export default function Home({ searchParams }) {
     document.querySelector(".doubleClickEmail").value = clientEmail;
     setNaame(clientName);
     setEmmail(clientEmail);
+    
   };
 
   const removeDoubleClickModal = () => {
@@ -801,14 +806,14 @@ export default function Home({ searchParams }) {
           <a href="#new__add__form">
             <button
               type="button"
-              className="btn btn-success newBtn"
+              className="btn btn-success"
               onClick={handleInsert}
             >
               New
             </button>
           </a>
 
-          <button className="import">Imoort</button>
+          <button className="import">Import</button>
           <button
             className="export"
             onClick={() => exportTableToExcel("table")}
@@ -1253,6 +1258,20 @@ export default function Home({ searchParams }) {
           <td>
             {" "}
             : <input type="text" className="doubleClickEmail" />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <span>Type </span>
+          </td>
+          <td>
+            {" "}
+            : <select name="" className="doubleClickReportType" onChange={(e)=>setType(e.target.value)}>
+              <option value="select">select Report type</option>
+              <option value="satisfaction">Satisfaction</option>
+              <option value="performance ">Performance </option>
+              <option value="ReturnorComplaint">Return or Complaint</option>
+            </select>
           </td>
         </tr>
         <tr>
