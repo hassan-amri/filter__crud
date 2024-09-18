@@ -20,7 +20,6 @@ import Header from "./Header";
 
 export default function Home({ searchParams }) {
   // reports states
-  
 
   const [r__message, setRmessage] = useState("");
   const tableRef = useRef(null);
@@ -476,8 +475,8 @@ export default function Home({ searchParams }) {
   };
 
   // add reports
-  const [r__name,setNaame] = useState("")
-  const [r__email,setEmmail] = useState("")
+  const [r__name, setNaame] = useState("");
+  const [r__email, setEmmail] = useState("");
   const addReports = async () => {
     if (document.querySelector(".doubleClickMessage").value !== "") {
       try {
@@ -503,12 +502,18 @@ export default function Home({ searchParams }) {
       } finally {
         setLoading(false);
       }
-    }
 
-    document.querySelector(".doubleClickName").value = '';
-    document.querySelector(".doubleClickEmail").value = '';
-    document.querySelector(".doubleClickMessage").value = '';
+      
+    }
     
+    document.querySelector(".doubleClickModal").style.display = "none";
+    document.querySelector(".doubleClickName").value = "";
+    document.querySelector(".doubleClickEmail").value = "";
+    document.querySelector(".doubleClickMessage").value = "";
+    document.querySelector(".AddedSuccessfully").style.display = "block";
+    setTimeout(()=>{
+      document.querySelector(".AddedSuccessfully").style.display = "none";
+    },2000)
 
     // clear the input fields right after inserting and fetching data
   };
@@ -776,7 +781,7 @@ export default function Home({ searchParams }) {
   };
 
   // close report modal
-  
+
   return (
     <div className="content">
       <Header />
@@ -1256,7 +1261,13 @@ export default function Home({ searchParams }) {
           </td>
           <td>
             {" "}
-            : <textarea className="doubleClickMessage"  onChange={(e)=>setRmessage(e.target.value)} name="" id=""></textarea>
+            :{" "}
+            <textarea
+              className="doubleClickMessage"
+              onChange={(e) => setRmessage(e.target.value)}
+              name=""
+              id=""
+            ></textarea>
           </td>
         </tr>
         <tr>
@@ -1267,6 +1278,7 @@ export default function Home({ searchParams }) {
           </td>
         </tr>
       </table>
+      <p className="AddedSuccessfully">Report added successfully</p>
       {/* <div className="doubleClickModal">
         <br />
         <span>Name :</span> <input type="text" className="doubleClickName" />

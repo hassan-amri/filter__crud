@@ -1,0 +1,63 @@
+/* Container for overflow */
+.table-container {
+    overflow-x: auto; /* Enables horizontal scrolling */
+    margin: 20px 0; /* Margin around the table */
+}
+
+/* General table styles */
+.reports-table {
+    width: 100%; /* Full width */
+    border-collapse: separate; /* Separate borders for rounded corners */
+    border-radius: 8px; /* Rounded corners */
+    overflow: hidden; /* Hide overflow for rounded corners */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+/* Header styles */
+.reports-table thead {
+    background-color: #007BFF; /* Blue background */
+    color: white; /* White text */
+}
+
+.reports-table th,
+.reports-table td {
+    padding: 12px 15px;
+    text-align: left; /* Align text to the left */
+}
+
+/* Row styles */
+.reports-table tbody tr {
+    border-bottom: 1px solid #ddd; /* Bottom border for rows */
+}
+
+/* Zebra striping and hover effect */
+.reports-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9; /* Light gray for even rows */
+}
+
+.reports-table tbody tr:hover {
+    background-color: #e1f5fe; /* Light blue on hover */
+}
+
+/* Message cell styles for scrollability */
+.message-cell {
+    max-height: 100px; /* Set a maximum height for the message cell */
+    overflow-y: auto; /* Enable vertical scrolling when content exceeds max height */
+    white-space: nowrap; /* Prevent text wrapping (optional) */
+}
+
+/* Responsive design adjustments */
+@media (max-width: 600px) {
+    .reports-table {
+        font-size: 0.9em; /* Smaller font on mobile */
+    }
+    
+    .reports-table th,
+    .reports-table td {
+        padding: 10px; /* Adjust padding for smaller screens */
+    }
+
+    .message-cell {
+        max-height: 60px; /* Adjust max height for mobile devices if needed */
+    }
+}
